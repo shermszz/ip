@@ -81,11 +81,51 @@ public class Shermszz {
     }
 
     private static void addTask(String command) {
-        printLine();
-        Task t = new Task(command);
-        list.add(t);
-        System.out.println("Shermszz added your instruction '"  + command + "' to your list of tasks");
-        printLine();
+        try {
+            String[] parts = command.split("\\s+");
+            //parts[0] is either todo or deadline or event. Anything else is unknown command and should throw erros
+            String inst = parts[0]; //Just to get the first keyword
+            Task t = null;
+            printLine();
+            if (inst.equals("todo")) {
+                if (command.length() < 5) System.out.println("Please enter a valid todo format as follows: todo <description>");
+                else {
+                    String description = command.substring(5).trim();
+                    t = new Todo(description);
+                }
+            } else if (inst.equals("deadline")) {
+                // Get the date
+                int byIndex = command.indexOf("/by");
+                if (byIndex == -1) System.out.println("Please enter a valid deadline format as follows: deadline <description> /by <due date>");
+                else {
+                    String description = command.substring(9, byIndex).trim(); //returns the description just before "/by" and after "deadline "
+                    String dueBy = command.substring(byIndex + 3).trim(); // Start index is right after /by
+                    t = new Deadline(description, dueBy);
+                }
+            } else if (inst.equals("event")) {
+                //Get the start and end dates
+                int fromIndex = command.indexOf("/from");
+                int toIndex = command.indexOf("/to");
+                if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
+                    System.out.println("Please enter a valid event format as follows: event <description>  /from <start date> /by <due date>");
+                } else {
+                    String description = command.substring(6, fromIndex).trim();
+                    String start = command.substring(fromIndex + 5, toIndex).trim();
+                    String end = command.substring(toIndex + 3).trim();
+                    t = new Event(description, start, end);
+                }
+            } else {
+                System.out.println("Your command: " + command + " is invalid.");
+            }
+            if (t != null) {
+                list.add(t);
+                System.out.println("Got it. I've added this task:\n" + t.toString());
+                System.out.println("Now you have " + list.size() + " tasks in the list");
+            }
+            printLine();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("You did no enter an appropriate format.");
+        }
     }
 
 
@@ -105,7 +145,7 @@ public class Shermszz {
                 unmarkTask(instruction);
             }
             else {
-                //Default adding instructions
+                //Now, look for keywords: todo, deadline, event
                 addTask(instruction);
             }
         }
