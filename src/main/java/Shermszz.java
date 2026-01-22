@@ -28,12 +28,15 @@ public class Shermszz {
         }
     }
 
-    private static void markTask(String command) {
+    private static void markTask(String command) throws MarkFormatException {
+        String[] parts = command.split(" "); //Should be mark X, where X is a number
+        if (parts.length < 2) {
+            throw new MarkFormatException("You must specify a task to mark after typing \"mark\"");
+        }
         try {
-            String[] parts = command.split(" "); //Should be mark X, where X is a number
-            int idx = Integer.parseInt(parts[1]);
+            int idx = Integer.parseInt(parts[1]); //Could throw NumberFormatExecption if a digit isnt entered
             if (idx > list.size() || idx < 1) {
-                System.out.println("Cannot mark task with ID = " + idx + ". It does not exist.");
+                throw new MarkFormatException("Cannot mark task with ID = " + idx + ". It does not exist.");
             } else {
                 //Within range, so we mark the task
                 Task t = list.get(idx - 1); //0 -based indexing
@@ -46,20 +49,19 @@ public class Shermszz {
                 System.out.println(t.toString());
             }
         } catch (NumberFormatException e) {
-            System.out.println("You did no enter an appropriate format. Please enter 'mark X', where X is a digit.");
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("You did no enter an appropriate format. Please enter 'mark X', where X is a digit.");
+            throw new MarkFormatException("Please specify a valid task ID number.");
         }
-
-
     }
 
-    private static void unmarkTask(String command) {
+    private static void unmarkTask(String command) throws MarkFormatException {
+        String[] parts = command.split(" "); //Should be mark X, where X is a number
+        if (parts.length < 2) {
+            throw new MarkFormatException("You must specify a task to unmark after typing \"unmark\"");
+        }
         try {
-            String[] parts = command.split(" "); //Should be mark X, where X is a number
             int idx = Integer.parseInt(parts[1]);
             if (idx > list.size() || idx < 1) {
-                System.out.println("Cannot unmark task with ID =  " + idx + ". It does not exist.");
+                throw new MarkFormatException("Cannot unmark task with ID =  " + idx + ". It does not exist.");
             } else {
                 //Within range, so we mark the task
                 Task t = list.get(idx - 1); //0 -based indexing
@@ -68,64 +70,62 @@ public class Shermszz {
                     System.out.println("This task has yet to be completed.");
                 } else {
                     t.markAsIncomplete(); //Set to incomplete now
-                    System.out.println("Ok, I've marked this task as not done yet:");
+                    System.out.println("Ok, I've unmarked this task to be not done yet:");
                 }
                 System.out.println(t.toString());
             }
         } catch (NumberFormatException e) {
-            System.out.println("You did no enter an appropriate format. Please enter 'unmark X', where X is a digit.");
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("You did no enter an appropriate format. Please enter 'unmark X', where X is a digit.");
+            throw new MarkFormatException("Please specify a valid task ID number.");
         }
 
     }
 
-    private static void addTask(String command) {
-        try {
-            String[] parts = command.split("\\s+");
-            //parts[0] is either todo or deadline or event. Anything else is unknown command and should throw erros
-            String inst = parts[0]; //Just to get the first keyword
-            Task t = null;
-            printLine();
-            if (inst.equals("todo")) {
-                if (command.length() < 5) System.out.println("Please enter a valid todo format as follows: todo <description>");
-                else {
-                    String description = command.substring(5).trim();
-                    t = new Todo(description);
-                }
-            } else if (inst.equals("deadline")) {
-                // Get the date
-                int byIndex = command.indexOf("/by");
-                if (byIndex == -1) System.out.println("Please enter a valid deadline format as follows: deadline <description> /by <due date>");
-                else {
-                    String description = command.substring(9, byIndex).trim(); //returns the description just before "/by" and after "deadline "
-                    String dueBy = command.substring(byIndex + 3).trim(); // Start index is right after /by
-                    t = new Deadline(description, dueBy);
-                }
-            } else if (inst.equals("event")) {
-                //Get the start and end dates
-                int fromIndex = command.indexOf("/from");
-                int toIndex = command.indexOf("/to");
-                if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
-                    System.out.println("Please enter a valid event format as follows: event <description>  /from <start date> /by <due date>");
-                } else {
-                    String description = command.substring(6, fromIndex).trim();
-                    String start = command.substring(fromIndex + 5, toIndex).trim();
-                    String end = command.substring(toIndex + 3).trim();
-                    t = new Event(description, start, end);
-                }
+    private static void addTask(String command) throws TodoFormatException, DeadlineFormatException, EventFormatException, UnknownCommandException {
+        String[] parts = command.split("\\s+");
+        //parts[0] is either todo or deadline or event. Anything else is unknown command and should throw errors
+        String inst = parts[0]; //Just to get the first keyword
+        Task t = null;
+        printLine();
+        if (inst.equals("todo")) {
+            if (command.length() < 5) {
+                throw new TodoFormatException("Please enter a valid todo format as follows: todo <description>");
+            }
+            else {
+                String description = command.substring(5).trim();
+                t = new Todo(description);
+            }
+        } else if (inst.equals("deadline")) {
+            // Get the date
+            int byIndex = command.indexOf("/by");
+            if (byIndex == -1) {
+                throw new DeadlineFormatException("Please enter a valid deadline format as follows: deadline <description> /by <due date>");
+            }
+            else {
+                String description = command.substring(9, byIndex).trim(); //returns the description just before "/by" and after "deadline "
+                String dueBy = command.substring(byIndex + 3).trim(); // Start index is right after /by
+                t = new Deadline(description, dueBy);
+            }
+        } else if (inst.equals("event")) {
+            //Get the start and end dates
+            int fromIndex = command.indexOf("/from");
+            int toIndex = command.indexOf("/to");
+            if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
+                throw new EventFormatException("Please enter a valid event format as follows: event <description>  /from <start date> /to <due date>");
             } else {
-                System.out.println("Your command: " + command + " is invalid.");
+                String description = command.substring(6, fromIndex).trim();
+                String start = command.substring(fromIndex + 5, toIndex).trim();
+                String end = command.substring(toIndex + 3).trim();
+                t = new Event(description, start, end);
             }
-            if (t != null) {
-                list.add(t);
-                System.out.println("Got it. I've added this task:\n" + t.toString());
-                System.out.println("Now you have " + list.size() + " tasks in the list");
-            }
-            printLine();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("You did no enter an appropriate format.");
+        } else {
+            throw new UnknownCommandException("Your command: " + command + " is invalid.");
         }
+        if (t != null) {
+            list.add(t);
+            System.out.println("Got it. I've added this task:\n" + t.toString());
+            System.out.println("Now you have " + list.size() + " tasks in the list");
+        }
+        printLine();
     }
 
 
@@ -133,23 +133,25 @@ public class Shermszz {
         Scanner sc = new Scanner(System.in);
         list = new ArrayList<>();
         greetUser();
-
         while (true) {
             String instruction = sc.nextLine();
             if (instruction.equals("bye")) break;
-            else if (instruction.equals("list")) {
-                listTasks();
-            } else if (instruction.startsWith("mark")) { // Command to mark some instruction
-                markTask(instruction);
-            } else if (instruction.startsWith("unmark")) {
-                unmarkTask(instruction);
-            }
-            else {
-                //Now, look for keywords: todo, deadline, event
-                addTask(instruction);
+            try {
+                if (instruction.equals("list")) {
+                    listTasks();
+                } else if (instruction.startsWith("mark")) { // Command to mark some instruction
+                    markTask(instruction);
+                } else if (instruction.startsWith("unmark")) {
+                    unmarkTask(instruction);
+                } else {
+                    //Now, look for keywords: todo, deadline, event
+                    addTask(instruction);
+                }
+            } catch (ShermszzException e) {
+                System.out.println(e.getMessage());
+                printLine();
             }
         }
-
         sayBye();
         sc.close();
     }
