@@ -128,6 +128,26 @@ public class Shermszz {
         printLine();
     }
 
+    public static void deleteTask(String command) throws DeleteFormatException {
+        String[] parts = command.split(" ");
+        if (parts.length < 2) {
+            throw new DeleteFormatException("You must specify a task to delete after typing \"delete\"");
+        }
+        try {
+            int id = Integer.parseInt(parts[1]);
+            if (id > list.size() || id < 1) {
+                throw new DeleteFormatException("Cannot delete task with ID =  " + id + ". It does not exist.");
+            } else {
+                Task toDelete = list.remove(id - 1);
+                System.out.println("Noted. I've removed this task:");
+                System.out.println(toDelete.toString());
+            }
+        } catch (NumberFormatException e) {
+            throw new DeleteFormatException("Please specify a valid task ID number.");
+        }
+        System.out.println("Now you have " + list.size() + " tasks in the list.");
+    }
+
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -143,7 +163,10 @@ public class Shermszz {
                     markTask(instruction);
                 } else if (instruction.startsWith("unmark")) {
                     unmarkTask(instruction);
-                } else {
+                } else if (instruction.startsWith("delete")) {
+                    deleteTask(instruction);
+                }
+                else {
                     //Now, look for keywords: todo, deadline, event
                     addTask(instruction);
                 }

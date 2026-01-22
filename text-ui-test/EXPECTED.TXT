@@ -55,6 +55,22 @@ Nice! I've marked this task as done:
 [T][X] read book
 Ok, I've unmarked this task to be not done yet:
 [T][] read book
+Delete Format Exception: You must specify a task to delete after typing "delete"
+--------------------------------------
+Delete Format Exception: Please specify a valid task ID number.
+--------------------------------------
+Delete Format Exception: Cannot delete task with ID =  100. It does not exist.
+--------------------------------------
+Here are the tasks in your list:
+1. [T][] read book
+2. [D][] return book (by: Sunday)
+3. [E][] project meeting (from: Mon 2pm to: 4pm)
+Noted. I've removed this task:
+[T][] read book
+Now you have 2 tasks in the list.
+Here are the tasks in your list:
+1. [D][] return book (by: Sunday)
+2. [E][] project meeting (from: Mon 2pm to: 4pm)
 --------------------------------------
 Bye. Hope to see you again soon!
 
