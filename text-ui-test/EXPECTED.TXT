@@ -4,16 +4,13 @@ What can I do for you?
 
 --------------------------------------
 Here are the tasks in your list:
---------------------------------------
 Got it. I've added this task:
 [T][] read book
 Now you have 1 tasks in the list
 --------------------------------------
---------------------------------------
 Got it. I've added this task:
 [D][] return book (by: Sunday)
 Now you have 2 tasks in the list
---------------------------------------
 --------------------------------------
 Got it. I've added this task:
 [E][] project meeting (from: Mon 2pm to: 4pm)
@@ -23,15 +20,11 @@ Here are the tasks in your list:
 1. [T][] read book
 2. [D][] return book (by: Sunday)
 3. [E][] project meeting (from: Mon 2pm to: 4pm)
---------------------------------------
-Unknown Command Error: Your command: blah is invalid.
---------------------------------------
+Unknown Command Error: Your command "blah" is invalid.
 --------------------------------------
 Todo Format Error: Please enter a valid todo format as follows: todo <description>
 --------------------------------------
---------------------------------------
 Deadline Format Error: Please enter a valid deadline format as follows: deadline <description> /by <due date>
---------------------------------------
 --------------------------------------
 Event Format Error: Please enter a valid event format as follows: event <description>  /from <start date> /to <due date>
 --------------------------------------

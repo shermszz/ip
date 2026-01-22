@@ -21,6 +21,10 @@ public class Task {
         return completed ? "X" : " ";
     }
 
+    public boolean isDone() {
+        return this.completed;
+    }
+
     public void markAsDone() {
         this.completed = true;
     }
