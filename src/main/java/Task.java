@@ -32,4 +32,9 @@ public class Task {
     public void markAsIncomplete() {
         this.completed = false;
     }
+
+    public String toFileFormat() {
+        //1 for done, 0 for not done
+        return String.format("%d | %s", this.completed ? 1 : 0, this.description);
+    }
 }

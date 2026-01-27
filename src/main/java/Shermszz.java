@@ -1,8 +1,76 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Shermszz {
     private static ArrayList<Task> list; // To store a list of user's tasks.
+
+    private static void saveTasks() {
+        try {
+            File directory = new File("data");
+            if (!directory.exists()) {
+                directory.mkdirs(); //Create directory if it does not exist
+            }
+
+            FileWriter fw = new FileWriter("data/shermszz.txt");
+            for (Task t : list) {
+                fw.write(t.toFileFormat() + System.lineSeparator());
+            }
+            fw.close();
+        } catch (IOException e) {
+            System.out.println("Error saving tasks: " + e.getMessage());
+        }
+    }
+
+    private static void loadTasks() {
+        try {
+            File f = new File("data/shermszz.txt");
+            if (!f.exists()) {
+                return; //The file has nothing to load, so we start with an empty list
+            }
+            Scanner sc = new Scanner(f);
+            while (sc.hasNext()) {
+                String line = sc.nextLine();
+                try {
+                    parseAndAdd(line);
+                } catch (Exception e) {
+                    System.out.println("Corrupted data found and skipped: " + line);
+                }
+            }
+            sc.close();
+        } catch (IOException e) {
+            System.out.println("Error loading tasks: " + e.getMessage());
+        }
+    }
+
+    private static void parseAndAdd(String line) {
+        String[] parts = line.split(" \\| "); //To split the array up based on " | ".
+        //E.g. T | 1 | read book --> ["T", "1", "read book"]
+        String type = parts[0]; //Either a Todo or Deadline or Event task
+        boolean isDone = parts[1].equals("1");
+        String description = parts[2];
+        Task t = null;
+        switch (type) {
+            case "T":
+                t = new Todo(description);
+                break;
+            case "D":
+                t = new Deadline(description, parts[3]);
+                break;
+            case "E":
+                t = new Event(description, parts[3], parts[4]);
+                break;
+        }
+
+        if (t != null) {
+            if (isDone) t.markAsDone();
+            list.add(t);
+        }
+    }
 
     private static void printLine() {
         System.out.println("--------------------------------------");
@@ -161,6 +229,7 @@ public class Shermszz {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         list = new ArrayList<>();
+        loadTasks();
         greetUser();
         while (true) {
             String instruction = sc.nextLine();
@@ -179,21 +248,27 @@ public class Shermszz {
                         break;
                     case MARK:
                         markTask(instruction);
+                        saveTasks();
                         break;
                     case UNMARK:
                         unmarkTask(instruction);
+                        saveTasks();
                         break;
                     case DELETE:
                         deleteTask(instruction);
+                        saveTasks();
                         break;
                     case TODO:
                         addTodoTask(instruction);
+                        saveTasks();
                         break;
                     case DEADLINE:
                         addDeadlineTask(instruction);
+                        saveTasks();
                         break;
                     case EVENT:
                         addEventTask(instruction);
+                        saveTasks();
                         break;
                 }
             } catch (ShermszzException e) {
