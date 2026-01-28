@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.time.LocalDate;
 
 public class Task {
     private boolean completed;
@@ -32,6 +33,8 @@ public class Task {
     public void markAsIncomplete() {
         this.completed = false;
     }
+
+    public boolean isOccurringOn(LocalDate date) { return false; } //Default is to return false, since a general task may or may not have a deadline
 
     public String toFileFormat() {
         //1 for done, 0 for not done

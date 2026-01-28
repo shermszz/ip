@@ -3,8 +3,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Shermszz {
     private static ArrayList<Task> list; // To store a list of user's tasks.
@@ -56,12 +59,15 @@ public class Shermszz {
         Task t = null;
         switch (type) {
             case "T":
+                //E.g. T | 0 | test todo
                 t = new Todo(description);
                 break;
             case "D":
+                //E.g. D | 0 | test deadline | 2025-01-01
                 t = new Deadline(description, parts[3]);
                 break;
             case "E":
+                //E.g. E | 0 | test event | 2025-01-01 | 2026-01-01
                 t = new Event(description, parts[3], parts[4]);
                 break;
         }
@@ -78,14 +84,15 @@ public class Shermszz {
 
     private static void greetUser() {
         printLine();
-        System.out.println("Hello! I'm Shermszz");
-        System.out.println("What can I do for you?\n");
+        System.out.println("Hello from under the water! I am Spongebob here to record your tasks in my pineapple.");
+        System.out.println("Right now, I can record Todo, Deadline and Event tasks, mark your tasks as complete or unmark them as incomplete, List the tasks you have recorded so far, as well as Delete a task from the record.");
+        System.out.println("What can I do for you?");
         printLine();
     }
 
     private static void sayBye() {
         printLine();
-        System.out.println("Bye. Hope to see you again soon!\n");
+        System.out.println("Bye. Hope to see you again soon!");
         printLine();
     }
 
@@ -93,6 +100,35 @@ public class Shermszz {
         System.out.println("Here are the tasks in your list:");
         for (int i = 0; i < list.size(); i++) {
             System.out.println((i + 1) + ". " + list.get(i).toString());
+        }
+        printLine();
+    }
+
+    private static void printTasksOnDate(String command) {
+        try {
+            //Command format: "schedule 2025-01-01" --> Will list all deadline/event tasks that are due by 2025-01-01
+            String[] parts = command.split(" ");
+            if (parts.length < 2) {
+                System.out.println("Please specify a date: schedule YYYY-MM-DD");
+                printLine();
+                return;
+            }
+            String dateAsString = parts[1].trim();
+            LocalDate targetDate = LocalDate.parse(dateAsString);
+            System.out.println("Tasks that will occur on / are occurring on " + targetDate + " are listed below: ");
+            int count = 0;
+            for (Task t : list) {
+                if (t.isOccurringOn(targetDate)) {
+                    System.out.println(t.toString());
+                    count++;
+                }
+            }
+            if (count == 0) System.out.println("[You have no tasks occurring on " + targetDate);
+            printLine();
+
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid Date Format. Please use YYYY-MM-DD.");
+            printLine();
         }
     }
 
@@ -165,16 +201,22 @@ public class Shermszz {
     private static void addDeadlineTask(String command) throws DeadlineFormatException {
         int byIndex = command.indexOf("/by");
         if (byIndex == -1) {
-            throw new DeadlineFormatException("Please enter a valid deadline format as follows: deadline <description> /by <due date>");
+            throw new DeadlineFormatException("Invalid format. Use deadline <description> /by YYYY-MM-DD");
         }
         else {
             String description = command.substring(9, byIndex).trim(); //returns the description just before "/by" and after "deadline "
             String dueBy = command.substring(byIndex + 3).trim(); // Start index is right after /by
-            Task t = new Deadline(description, dueBy);
-            list.add(t);
-            System.out.println("Got it. I've added this task:\n" + t.toString());
-            System.out.println("Now you have " + list.size() + " tasks in the list");
-            printLine();
+            try {
+                Task t = new Deadline(description, dueBy);
+                list.add(t);
+                System.out.println("Got it. I've added this task:\n" + t.toString());
+                System.out.println("Now you have " + list.size() + " tasks in the list");
+                printLine();
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid Date Format. Please use YYYY-MM-DD (e.g. 2025-01-28 to represent 28th Jan 2025) to represent the deadline date.");
+                printLine();
+            }
+
         }
     }
 
@@ -188,14 +230,19 @@ public class Shermszz {
             String description = command.substring(6, fromIndex).trim();
             String start = command.substring(fromIndex + 5, toIndex).trim();
             String end = command.substring(toIndex + 3).trim();
-            Task t = new Event(description, start, end);
-            list.add(t);
-            System.out.println("Got it. I've added this task:\n" + t.toString());
-            System.out.println("Now you have " + list.size() + " tasks in the list");
-            printLine();
+            try {
+                Task t = new Event(description, start, end);
+                list.add(t);
+                System.out.println("Got it. I've added this task:\n" + t.toString());
+                System.out.println("Now you have " + list.size() + " tasks in the list");
+                printLine();
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid Date Format. Please use YYYY-MM-DD (e.g. 2025-01-28 to represent 28th Jan 2025) to represent the 2 dates required for an Event task." );
+                printLine();
+            }
+
         }
     }
-
 
     private static void deleteTask(String command) throws DeleteFormatException {
         String[] parts = command.split(" ");
@@ -245,6 +292,9 @@ public class Shermszz {
                         return; //Break out of the loop
                     case LIST:
                         listTasks();
+                        break;
+                    case SCHEDULE:
+                        printTasksOnDate(instruction);
                         break;
                     case MARK:
                         markTask(instruction);
