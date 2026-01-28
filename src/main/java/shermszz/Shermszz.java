@@ -1,3 +1,23 @@
+package shermszz;
+import shermszz.parser.Parser;
+import shermszz.storage.Storage;
+import shermszz.task.Task;
+import shermszz.task.Todo;
+import shermszz.task.Deadline;
+import shermszz.task.Event;
+import shermszz.task.TaskList;
+import shermszz.ui.Ui;
+import shermszz.parser.Command;
+import shermszz.exceptions.ShermszzException;
+import shermszz.exceptions.FileSaveException;
+import shermszz.exceptions.ScheduleFormatException;
+import shermszz.exceptions.MarkFormatException;
+import shermszz.exceptions.TodoFormatException;
+import shermszz.exceptions.DeadlineFormatException;
+import shermszz.exceptions.EventFormatException;
+import shermszz.exceptions.DeleteFormatException;
+
+
 import java.time.format.DateTimeParseException;
 import java.time.LocalDate;
 
@@ -82,7 +102,7 @@ public class Shermszz {
 
     private void printTasksOnDate(String command) {
         try {
-            LocalDate targetDate = Parser.parseSchedule(command); //Parser returns the date
+            LocalDate targetDate = Parser.parseSchedule(command); //shermszz.parser.Parser returns the date
             int count = 0;
             for (int i = 0; i < this.tasks.getSize(); i++) {
                 Task t = this.tasks.get(i);
@@ -111,6 +131,7 @@ public class Shermszz {
                 t.markAsDone();
                 this.ui.showMarked(t, "Nice! I've marked this task as done:");
             }
+            this.ui.showLine();
         } catch (MarkFormatException e) {
             this.ui.showError(e.getMessage());
         }
@@ -127,6 +148,7 @@ public class Shermszz {
                 t.markAsIncomplete();
                 this.ui.showUnmarked(t, "Ok, I've unmarked this task to be not done yet:");
             }
+            this.ui.showLine();
         } catch (MarkFormatException e) {
             this.ui.showError(e.getMessage());
         }
@@ -152,12 +174,12 @@ public class Shermszz {
             Task t = new Deadline(description, dueBy);
             this.tasks.add(t);
             this.ui.showTaskAdded(t, this.tasks.getSize());
+            this.ui.showLine();
         } catch (DateTimeParseException e) {
             this.ui.showError("Invalid Date Format. Please use YYYY-MM-DD (e.g. 2025-01-28 to represent 28th Jan 2025) to represent the deadline date.");
         } catch (DeadlineFormatException e) {
             this.ui.showError(e.getMessage());
         }
-        this.ui.showLine();
     }
 
     private void addEventTask(String command) throws EventFormatException {
@@ -171,7 +193,7 @@ public class Shermszz {
             this.ui.showTaskAdded(t, this.tasks.getSize());
             this.ui.showLine();
         } catch (DateTimeParseException e) {
-            this.ui.showError("Invalid Date Format. Please use YYYY-MM-DD (e.g. 2025-01-28 to represent 28th Jan 2025) to represent the 2 dates required for an Event task.");
+            this.ui.showError("Invalid Date Format. Please use YYYY-MM-DD (e.g. 2025-01-28 to represent 28th Jan 2025) to represent the 2 dates required for an shermszz.task.Event task.");
         }
     }
 

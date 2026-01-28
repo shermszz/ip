@@ -1,3 +1,5 @@
+package shermszz.exceptions;
+
 public class UnknownCommandException extends ShermszzException {
     public UnknownCommandException(String msg) {
         super(msg);

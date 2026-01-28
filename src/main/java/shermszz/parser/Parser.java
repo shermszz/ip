@@ -1,5 +1,14 @@
+package shermszz.parser;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import shermszz.exceptions.TodoFormatException;
+import shermszz.exceptions.DeadlineFormatException;
+import shermszz.exceptions.DeleteFormatException;
+import shermszz.exceptions.EventFormatException;
+import shermszz.exceptions.UnknownCommandException;
+import shermszz.exceptions.MarkFormatException;
+import shermszz.exceptions.ScheduleFormatException;
 
 public class Parser {
     public static Command parse(String fullCommand) throws UnknownCommandException {
@@ -94,7 +103,7 @@ public class Parser {
     }
 
     public static LocalDate parseSchedule(String command) throws ScheduleFormatException {
-        //Command format: "schedule 2025-01-01" --> Will list all deadline/event tasks that are due by 2025-01-01
+        //shermszz.parser.Command format: "schedule 2025-01-01" --> Will list all deadline/event tasks that are due by 2025-01-01
         String[] parts = command.split(" ");
         if (parts.length < 2) {
             throw new ScheduleFormatException("Please specify a date: schedule YYYY-MM-DD");
