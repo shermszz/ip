@@ -1,3 +1,5 @@
+package shermszz.exceptions;
+
 public class TodoFormatException extends ShermszzException {
 
     public TodoFormatException(String msg) {

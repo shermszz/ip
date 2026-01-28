@@ -1,8 +1,17 @@
+package shermszz.storage;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import shermszz.task.Task;
+import shermszz.task.TaskList;
+import shermszz.task.Todo;
+import shermszz.task.Deadline;
+import shermszz.task.Event;
+import shermszz.exceptions.ShermszzException;
+import shermszz.exceptions.FileSaveException;
 
 public class Storage {
     private String filepath;
@@ -25,7 +34,7 @@ public class Storage {
                 try {
                     String[] parts = line.split(" \\| "); //To split the array up based on " | ".
                     //E.g. T | 1 | read book --> ["T", "1", "read book"]
-                    String type = parts[0]; //Either a Todo or Deadline or Event task
+                    String type = parts[0]; //Either a shermszz.task.Todo or shermszz.task.Deadline or shermszz.task.Event task
                     boolean isDone = parts[1].equals("1");
                     String description = parts[2];
                     Task t = null;

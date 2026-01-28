@@ -1,3 +1,5 @@
+package shermszz.exceptions;
+
 public class DeadlineFormatException extends ShermszzException {
     public DeadlineFormatException(String msg) {
         super(msg);

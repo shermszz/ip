@@ -1,3 +1,5 @@
+package shermszz.exceptions;
+
 public class DeleteFormatException extends ShermszzException {
     public DeleteFormatException(String msg) {
         super(msg);

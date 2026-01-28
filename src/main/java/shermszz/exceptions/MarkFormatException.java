@@ -1,3 +1,5 @@
+package shermszz.exceptions;
+
 public class MarkFormatException extends ShermszzException {
     public MarkFormatException(String msg) {
         super(msg);

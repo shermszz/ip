@@ -1,3 +1,5 @@
+package shermszz.exceptions;
+
 public class FileSaveException extends ShermszzException {
 
     public FileSaveException(String message) {

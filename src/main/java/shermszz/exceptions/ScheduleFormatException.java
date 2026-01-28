@@ -1,3 +1,5 @@
+package shermszz.exceptions;
+
 public class ScheduleFormatException extends ShermszzException {
 
     public ScheduleFormatException(String msg) {

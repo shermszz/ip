@@ -1,3 +1,5 @@
+package shermszz.exceptions;
+
 public class EventFormatException extends ShermszzException {
     public EventFormatException(String msg) {
         super(msg);

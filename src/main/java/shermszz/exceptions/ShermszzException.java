@@ -1,3 +1,5 @@
+package shermszz.exceptions;
+
 public class ShermszzException extends Exception {
     private String errorMessage;
 
