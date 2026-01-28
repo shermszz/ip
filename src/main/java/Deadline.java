@@ -1,22 +1,26 @@
+import java.time.LocalDate; //YYYY-MM-DD
+import java.time.format.DateTimeFormatter;
+
 public class Deadline extends Task {
-    private String dueBy; //Just the month and day, whichever is given
+    private LocalDate dueBy; //Expect YYYY-MM-DD format
 
     public Deadline(String description, String dueBy) {
         super(description);
-        this.dueBy = dueBy;
-    }
-
-    public String getDeadline() {
-        return this.dueBy;
+        this.dueBy = LocalDate.parse(dueBy);
     }
 
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + this.dueBy + ")";
+        return "[D]" + super.toString() + " (by: " + this.dueBy.format(DateTimeFormatter.ofPattern("MMM dd yyyy")) + ")";
     }
 
     @Override
     public String toFileFormat() {
         return "D | " + super.toFileFormat() + " | " + this.dueBy;
+    }
+
+    @Override
+    public boolean isOccurringOn(LocalDate date) {
+        return this.dueBy.isAfter(date);
     }
 }
