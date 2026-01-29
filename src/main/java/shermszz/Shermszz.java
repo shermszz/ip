@@ -1,25 +1,25 @@
 package shermszz;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
+import shermszz.exceptions.DeadlineFormatException;
+import shermszz.exceptions.DeleteFormatException;
+import shermszz.exceptions.EventFormatException;
+import shermszz.exceptions.FileSaveException;
+import shermszz.exceptions.MarkFormatException;
+import shermszz.exceptions.ScheduleFormatException;
+import shermszz.exceptions.ShermszzException;
+import shermszz.exceptions.TodoFormatException;
+import shermszz.parser.Command;
 import shermszz.parser.Parser;
 import shermszz.storage.Storage;
-import shermszz.task.Task;
-import shermszz.task.Todo;
 import shermszz.task.Deadline;
 import shermszz.task.Event;
+import shermszz.task.Task;
 import shermszz.task.TaskList;
+import shermszz.task.Todo;
 import shermszz.ui.Ui;
-import shermszz.parser.Command;
-import shermszz.exceptions.ShermszzException;
-import shermszz.exceptions.FileSaveException;
-import shermszz.exceptions.ScheduleFormatException;
-import shermszz.exceptions.MarkFormatException;
-import shermszz.exceptions.TodoFormatException;
-import shermszz.exceptions.DeadlineFormatException;
-import shermszz.exceptions.EventFormatException;
-import shermszz.exceptions.DeleteFormatException;
-
-
-import java.time.format.DateTimeParseException;
-import java.time.LocalDate;
 
 /**
  * The main entry point of the Shermszz Chatbot Application.
@@ -27,13 +27,14 @@ import java.time.LocalDate;
  */
 
 public class Shermszz {
+    private static final String DEFAULT_FILE_PATH = "data/shermszz.txt";
     private Storage storage;
     private TaskList tasks;
     private Ui ui; //In charge of user interface, all the print statements are done in the ui object
 
     /**
      * Initializes the application with the specified file path.
-     * Attempts to laod existing data from storage; create a new list if loading fails.
+     * Attempts to load existing data from storage; create a new list if loading fails.
      * @param filepath The file path where task data is stored.
      */
     public Shermszz(String filepath) {
@@ -61,40 +62,41 @@ public class Shermszz {
                 String instruction = ui.readCommand();
                 Command c = Parser.parse(instruction);
                 switch (c) {
-                    case BYE:
-                        isExit = true;
-                        ui.showBye();
-                        break;
-                    case LIST:
-                        listTasks();
-                        break;
-                    case SCHEDULE:
-                        printTasksOnDate(instruction);
-                        break;
-                    case MARK:
-                        markTask(instruction);
-                        saveTasks();
-                        break;
-                    case UNMARK:
-                        unmarkTask(instruction);
-                        saveTasks();
-                        break;
-                    case DELETE:
-                        deleteTask(instruction);
-                        saveTasks();
-                        break;
-                    case TODO:
-                        addTodoTask(instruction);
-                        saveTasks();
-                        break;
-                    case DEADLINE:
-                        addDeadlineTask(instruction);
-                        saveTasks();
-                        break;
-                    case EVENT:
-                        addEventTask(instruction);
-                        saveTasks();
-                        break;
+                case BYE:
+                    isExit = true;
+                    ui.showBye();
+                    break;
+                case LIST:
+                    listTasks();
+                    break;
+                case SCHEDULE:
+                    printTasksOnDate(instruction);
+                    break;
+                case MARK:
+                    markTask(instruction);
+                    saveTasks();
+                    break;
+                case UNMARK:
+                    unmarkTask(instruction);
+                    saveTasks();
+                    break;
+                case DELETE:
+                    deleteTask(instruction);
+                    saveTasks();
+                    break;
+                case TODO:
+                    addTodoTask(instruction);
+                    saveTasks();
+                    break;
+                case DEADLINE:
+                    addDeadlineTask(instruction);
+                    saveTasks();
+                    break;
+                case EVENT:
+                    addEventTask(instruction);
+                    saveTasks();
+                    break;
+                default:
                 }
             } catch (ShermszzException e) {
                 ui.showError(e.getMessage());
@@ -137,7 +139,7 @@ public class Shermszz {
 
     private void markTask(String command) {
         try {
-            int idx = Parser.parseMarking(command, this.tasks.getSize()); // Will retrieve the id of the task we want to mark as done
+            int idx = Parser.parseMarking(command, this.tasks.getSize());
             //Within range, so we mark the task
             Task t = this.tasks.get(idx - 1); //0 -based indexing
             if (t.isDone()) {
@@ -154,7 +156,7 @@ public class Shermszz {
 
     private void unmarkTask(String command) {
         try {
-            int idx = Parser.parseUnmarking(command, this.tasks.getSize()); //Will retrieve the id of the task we want to unmark
+            int idx = Parser.parseUnmarking(command, this.tasks.getSize());
             //Within range, so we mark the task
             Task t = this.tasks.get(idx - 1); //0 -based indexing
             if (!t.isDone()) {
@@ -191,7 +193,8 @@ public class Shermszz {
             this.ui.showTaskAdded(t, this.tasks.getSize());
             this.ui.showLine();
         } catch (DateTimeParseException e) {
-            this.ui.showError("Invalid Date Format. Please use YYYY-MM-DD (e.g. 2025-01-28 to represent 28th Jan 2025) to represent the deadline date.");
+            this.ui.showError("Invalid Date Format. Please use YYYY-MM-DD "
+                    + "(e.g. 2025-01-28 to represent 28th Jan 2025) to represent the deadline date.");
         } catch (DeadlineFormatException e) {
             this.ui.showError(e.getMessage());
         }
@@ -208,7 +211,9 @@ public class Shermszz {
             this.ui.showTaskAdded(t, this.tasks.getSize());
             this.ui.showLine();
         } catch (DateTimeParseException e) {
-            this.ui.showError("Invalid Date Format. Please use YYYY-MM-DD (e.g. 2025-01-28 to represent 28th Jan 2025) to represent the 2 dates required for an shermszz.task.Event task.");
+            this.ui.showError("Invalid Date Format. Please use YYYY-MM-DD "
+                    + "(e.g. 2025-01-28 to represent 28th Jan 2025) to represent the 2 dates required "
+                    + "for an Event task.");
         }
     }
 
@@ -229,6 +234,6 @@ public class Shermszz {
      * @param args Command line arguments (not used).
      */
     public static void main(String[] args) {
-       new Shermszz("data/shermszz.txt").run();
+        new Shermszz(DEFAULT_FILE_PATH).run();
     }
 }

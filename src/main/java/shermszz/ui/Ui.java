@@ -1,8 +1,11 @@
 package shermszz.ui;
-import shermszz.task.Task;
-import shermszz.task.TaskList;
+
 import java.time.LocalDate;
 import java.util.Scanner;
+
+import shermszz.task.Task;
+import shermszz.task.TaskList;
+
 
 /**
  * Handles all interactions with the user, including reading input and printing messages.
@@ -32,7 +35,9 @@ public class Ui {
     public void showWelcome() {
         showLine();
         System.out.println("Hello from under the water! I am Spongebob here to record your tasks in my pineapple.");
-        System.out.println("Right now, I can record Todo, Deadline and Event tasks, mark your tasks as complete or unmark them as incomplete, List the tasks you have recorded so far, as well as Delete a task from the record.");
+        System.out.println("Right now, I can record Todo, Deadline and Event tasks, "
+                + "mark your tasks as complete or unmark them as incomplete, List the tasks you have recorded so far,"
+                + " as well as Delete a task from the record.");
         System.out.println("What can I do for you?");
         showLine();
     }
