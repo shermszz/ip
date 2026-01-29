@@ -13,13 +13,29 @@ import shermszz.task.Event;
 import shermszz.exceptions.ShermszzException;
 import shermszz.exceptions.FileSaveException;
 
+/**
+ * Handles the loading and saving of task data to the local hard disk.
+ */
+
 public class Storage {
     private String filepath;
 
+    /**
+     * Creates a new Storage instance.
+     *
+     * @param filepath The file path where data is stored.
+     */
     public Storage(String filepath) {
         this.filepath = filepath;
     }
 
+    /**
+     * Loads tasks from the data file.
+     * Parses each line of the file and converts it into specific Task objects (Todo, Deadline, Event).
+     *
+     * @return An ArrayList of Task objects loaded from the file.
+     * @throws ShermszzException If an I/O error occurs during reading.
+     */
     public ArrayList<Task> load() throws ShermszzException {
         ArrayList<Task> loadedTasks = new ArrayList<>();
         File f = new File(this.filepath);
@@ -68,6 +84,13 @@ public class Storage {
         return loadedTasks;
     }
 
+    /**
+     * Saves the current list of tasks to the data file.
+     * Overwrites the existing file with the current state of the TaskList.
+     *
+     * @param tasks The TaskList containing tasks to be saved.
+     * @throws FileSaveException If an I/O error occurs during writing.
+     */
     public void save(TaskList tasks) throws FileSaveException {
         try {
             File directory = new File("data");
