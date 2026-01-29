@@ -21,6 +21,8 @@ public enum Command {
     LIST,
     /** Command to view tasks on a specific schedule. */
     SCHEDULE,
+    /** Command to find tasks that match the description */
+    FIND,
     /** Command to exit the application. */
     BYE
 }

@@ -143,4 +143,20 @@ public class Ui {
     public void showNoTaskOnDate(LocalDate date) {
         System.out.println("[You have no tasks occurring on " + date);
     }
+
+    /**
+     * Prints the list of matching tasks to the console.
+     *
+     * @param tasks The TaskList containing the matching tasks.
+     */
+    public void showFoundTasks(TaskList tasks) {
+        if (tasks.getSize() == 0) {
+            System.out.println("No matching tasks found.");
+        } else {
+            System.out.println("Here are the matching tasks in your list: ");
+            for (int i = 0; i < tasks.getSize(); i++) {
+                System.out.println((i + 1) + ". " + tasks.get(i).toString());
+            }
+        }
+    }
 }
