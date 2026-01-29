@@ -74,7 +74,9 @@ public class Task {
      * @param date The date to check against.
      * @return true if the task occurs on the given date, false otherwise.
      */
-    public boolean isOccurringOn(LocalDate date) { return false; } //Default is to return false, since a general task may or may not have a deadline
+    public boolean isOccurringOn(LocalDate date) {
+        return false;
+    }
 
     /**
      * Formats the task data for storage in the hard disk.

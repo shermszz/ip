@@ -2,13 +2,14 @@ package shermszz.parser;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import shermszz.exceptions.TodoFormatException;
+
 import shermszz.exceptions.DeadlineFormatException;
 import shermszz.exceptions.DeleteFormatException;
 import shermszz.exceptions.EventFormatException;
-import shermszz.exceptions.UnknownCommandException;
 import shermszz.exceptions.MarkFormatException;
 import shermszz.exceptions.ScheduleFormatException;
+import shermszz.exceptions.TodoFormatException;
+import shermszz.exceptions.UnknownCommandException;
 
 /**
  * Parses user input into actionable commands and extracts task details.
@@ -67,7 +68,7 @@ public class Parser {
         if (byIndex == -1) {
             throw new DeadlineFormatException("Invalid format. Use deadline <description> /by YYYY-MM-DD");
         } else {
-            String description = command.substring(9, byIndex).trim(); //returns the description just before "/by" and after "deadline "
+            String description = command.substring(9, byIndex).trim();
             String dueBy = command.substring(byIndex + 3).trim(); // Start index is right after /by
             return new String[]{description, dueBy};
         }
@@ -85,7 +86,8 @@ public class Parser {
         int fromIndex = command.indexOf("/from");
         int toIndex = command.indexOf("/to");
         if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
-            throw new EventFormatException("Please enter a valid event format as follows: event <description>  /from <start date> /to <due date>");
+            throw new EventFormatException("Please enter a valid event format as follows: "
+                    + "event <description> /from <start date> /to <due date>");
         } else {
             String description = command.substring(6, fromIndex).trim();
             String start = command.substring(fromIndex + 5, toIndex).trim();
@@ -178,7 +180,7 @@ public class Parser {
      * @throws ScheduleFormatException If the date argument is missing or in an invalid format.
      */
     public static LocalDate parseSchedule(String command) throws ScheduleFormatException {
-        //shermszz.parser.Command format: "schedule 2025-01-01" --> Will list all deadline/event tasks that are due by 2025-01-01
+        //Command format: "schedule 2025-01-01" --> Will list all deadline/event tasks that are due by 2025-01-01
         String[] parts = command.split(" ");
         if (parts.length < 2) {
             throw new ScheduleFormatException("Please specify a date: schedule YYYY-MM-DD");
