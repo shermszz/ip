@@ -72,6 +72,9 @@ public class Shermszz {
                 case SCHEDULE:
                     printTasksOnDate(instruction);
                     break;
+                case FIND:
+                    findTasks(instruction);
+                    break;
                 case MARK:
                     markTask(instruction);
                     saveTasks();
@@ -223,7 +226,19 @@ public class Shermszz {
             int id = Parser.parseDeletion(command, this.tasks.getSize());
             Task toDelete = this.tasks.remove(id - 1);
             this.ui.showDeletedTask(toDelete, this.tasks.getSize());
+            this.ui.showLine();
         } catch (DeleteFormatException e) {
+            this.ui.showError(e.getMessage());
+        }
+    }
+
+    private void findTasks(String command) {
+        try {
+            String keyword = Parser.parseFind(command);
+            TaskList listOfTasksFound = this.tasks.find(keyword);
+            this.ui.showFoundTasks(listOfTasksFound);
+            this.ui.showLine();
+        } catch (ShermszzException e) {
             this.ui.showError(e.getMessage());
         }
     }

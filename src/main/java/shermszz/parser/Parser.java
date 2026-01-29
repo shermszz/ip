@@ -8,6 +8,7 @@ import shermszz.exceptions.DeleteFormatException;
 import shermszz.exceptions.EventFormatException;
 import shermszz.exceptions.MarkFormatException;
 import shermszz.exceptions.ScheduleFormatException;
+import shermszz.exceptions.ShermszzException;
 import shermszz.exceptions.TodoFormatException;
 import shermszz.exceptions.UnknownCommandException;
 
@@ -192,5 +193,20 @@ public class Parser {
         } catch (DateTimeParseException e) {
             throw new ScheduleFormatException("Invalid Date Format. Please use YYYY-MM-DD.");
         }
+    }
+
+    /**
+     * Parses the keyword from a find command.
+     *
+     * @param command The full command string (e.g., "find book").
+     * @return The keyword to search for.
+     * @throws ShermszzException If the keyword is missing.
+     */
+    public static String parseFind(String command) throws ShermszzException {
+        String[] parts = command.split(" ", 2);
+        if (parts.length < 2 || parts[1].trim().isEmpty()) {
+            throw new ShermszzException("Please specify a keyword to search for. (E.g. find book)");
+        }
+        return parts[1].trim();
     }
 }

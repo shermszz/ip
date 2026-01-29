@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import shermszz.exceptions.DeadlineFormatException;
 import shermszz.exceptions.EventFormatException;
 import shermszz.exceptions.MarkFormatException;
+import shermszz.exceptions.ShermszzException;
 import shermszz.exceptions.TodoFormatException;
 import shermszz.exceptions.UnknownCommandException;
 
@@ -81,4 +82,26 @@ public class ParserTest {
             assertEquals("Unknown Command Error: Your command \"Hello\" is invalid.", e.getMessage());
         }
     }
+
+    @Test
+    public void parseFind_validInput_success() throws Exception {
+        // Test that the keyword is correctly extracted
+        String command = "find book";
+        String expected = "book";
+        assertEquals(expected, Parser.parseFind(command));
+    }
+
+    @Test
+    public void parseFind_missingKeyword_exceptionThrown() {
+        // Test that "find" without a keyword throws an exception
+        try {
+            Parser.parseFind("find");
+            fail(); // The test should fail if no exception is thrown
+        } catch (ShermszzException e) {
+            // Verify the error message matches exactly what you wrote in Parser.java
+            assertEquals("Please specify a keyword to search for. (E.g. find book)", e.getMessage());
+        }
+    }
+
+
 }
