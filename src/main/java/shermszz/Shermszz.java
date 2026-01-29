@@ -21,11 +21,21 @@ import shermszz.exceptions.DeleteFormatException;
 import java.time.format.DateTimeParseException;
 import java.time.LocalDate;
 
+/**
+ * The main entry point of the Shermszz Chatbot Application.
+ * Initializes the UI, Storage and TaskList components and runs the command loop.
+ */
+
 public class Shermszz {
     private Storage storage;
     private TaskList tasks;
     private Ui ui; //In charge of user interface, all the print statements are done in the ui object
 
+    /**
+     * Initializes the application with the specified file path.
+     * Attempts to laod existing data from storage; create a new list if loading fails.
+     * @param filepath The file path where task data is stored.
+     */
     public Shermszz(String filepath) {
         this.ui = new Ui();
         this.storage = new Storage(filepath);
@@ -37,6 +47,11 @@ public class Shermszz {
         }
     }
 
+    /**
+     * Runs the main program loop.
+     * Continuously reads user commands, parses them, and executes the corresponding logic
+     * until the exit command is issued
+     */
     public void run() { //run the chatbot
         ui.showWelcome();
         boolean isExit = false;
@@ -208,6 +223,11 @@ public class Shermszz {
         }
     }
 
+    /**
+     * The main method to start the application.
+     *
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
        new Shermszz("data/shermszz.txt").run();
     }

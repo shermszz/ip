@@ -10,7 +10,23 @@ import shermszz.exceptions.UnknownCommandException;
 import shermszz.exceptions.MarkFormatException;
 import shermszz.exceptions.ScheduleFormatException;
 
+/**
+ * Parses user input into actionable commands and extracts task details.
+ * <p>
+ * This class serves as the interface between raw user input and the application's logic.
+ * It handles the breakdown of command strings, validation of formats, and extraction
+ * of arguments for task creation and modification.
+ */
 public class Parser {
+
+    /**
+     * Parses the full command string to identify the specific command type.
+     * Converts the first word of the input into a standard {@code Command} enum.
+     *
+     * @param fullCommand The full input string entered by the user.
+     * @return The {@code Command} corresponding to the user's input.
+     * @throws UnknownCommandException If the command word does not match any known command.
+     */
     public static Command parse(String fullCommand) throws UnknownCommandException {
         String[] parts = fullCommand.split(" ", 2);
         String commandWord = parts[0];
@@ -22,6 +38,14 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses the arguments for a Todo command.
+     * Extracts the description part of the command string.
+     *
+     * @param command The full command string (e.g., "todo read book").
+     * @return The description of the todo task.
+     * @throws TodoFormatException If the description is empty or the format is invalid.
+     */
     public static String parseTodo(String command) throws TodoFormatException {
         if (command.length() < 5) {
             throw new TodoFormatException("Please enter a valid todo format as follows: todo <description>");
@@ -30,6 +54,14 @@ public class Parser {
         }
     }
 
+    /**
+     * Extracts the description and deadline date from a Deadline command.
+     * Expects the format: "deadline [description] /by [date]".
+     *
+     * @param command The full command string.
+     * @return A String array where index 0 is the description and index 1 is the due date.
+     * @throws DeadlineFormatException If the "/by" delimiter is missing.
+     */
     public static String[] parseDeadline(String command) throws DeadlineFormatException {
         int byIndex = command.indexOf("/by");
         if (byIndex == -1) {
@@ -41,6 +73,14 @@ public class Parser {
         }
     }
 
+    /**
+     * Extracts the description, start time, and end time from an Event command.
+     * Expects the format: "event [description] /from [start] /to [end]".
+     *
+     * @param command The full command string.
+     * @return A String array where index 0 is description, 1 is start time, and 2 is end time.
+     * @throws EventFormatException If "/from" or "/to" delimiters are missing or unordered.
+     */
     public static String[] parseEvent(String command) throws EventFormatException {
         int fromIndex = command.indexOf("/from");
         int toIndex = command.indexOf("/to");
@@ -54,6 +94,15 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses the task index from a mark command.
+     * Validates that the index is a number and exists within the current task list.
+     *
+     * @param command The full command string (e.g., "mark 1").
+     * @param size    The current size of the task list (used for validation).
+     * @return The 1-based index of the task to be marked.
+     * @throws MarkFormatException If the index is missing, not a number, or out of bounds.
+     */
     public static int parseMarking(String command, int size) throws MarkFormatException {
         String[] parts = command.split(" "); //Should be mark X, where X is a number
         if (parts.length < 2) {
@@ -70,6 +119,15 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses the task index from an unmark command.
+     * Validates that the index is a number and exists within the current task list.
+     *
+     * @param command The full command string (e.g., "unmark 1").
+     * @param size    The current size of the task list (used for validation).
+     * @return The 1-based index of the task to be unmarked.
+     * @throws MarkFormatException If the index is missing, not a number, or out of bounds.
+     */
     public static int parseUnmarking(String command, int size) throws MarkFormatException {
         String[] parts = command.split(" "); //Should be mark X, where X is a number
         if (parts.length < 2) {
@@ -86,6 +144,15 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses the task index from a delete command.
+     * Validates that the index is a number and exists within the current task list.
+     *
+     * @param command The full command string (e.g., "delete 1").
+     * @param size    The current size of the task list (used for validation).
+     * @return The 1-based index of the task to be deleted.
+     * @throws DeleteFormatException If the index is missing, not a number, or out of bounds.
+     */
     public static int parseDeletion(String command, int size) throws DeleteFormatException {
         String[] parts = command.split(" ");
         if (parts.length < 2) {
@@ -102,6 +169,14 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses the schedule command to extract the target date.
+     * Expects input in the format "schedule YYYY-MM-DD".
+     *
+     * @param command The full command string.
+     * @return The parsed {@code LocalDate} object.
+     * @throws ScheduleFormatException If the date argument is missing or in an invalid format.
+     */
     public static LocalDate parseSchedule(String command) throws ScheduleFormatException {
         //shermszz.parser.Command format: "schedule 2025-01-01" --> Will list all deadline/event tasks that are due by 2025-01-01
         String[] parts = command.split(" ");
