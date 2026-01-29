@@ -18,7 +18,7 @@ public class Ui {
     public void showWelcome() {
         showLine();
         System.out.println("Hello from under the water! I am Spongebob here to record your tasks in my pineapple.");
-        System.out.println("Right now, I can record shermszz.task.Todo, shermszz.task.Deadline and shermszz.task.Event tasks, mark your tasks as complete or unmark them as incomplete, List the tasks you have recorded so far, as well as Delete a task from the record.");
+        System.out.println("Right now, I can record Todo, Deadline and Event tasks, mark your tasks as complete or unmark them as incomplete, List the tasks you have recorded so far, as well as Delete a task from the record.");
         System.out.println("What can I do for you?");
         showLine();
     }
