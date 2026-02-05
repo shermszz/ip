@@ -3,6 +3,14 @@ package shermszz.parser;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+import shermszz.command.AddCommand;
+import shermszz.command.Command;
+import shermszz.command.DeleteCommand;
+import shermszz.command.ExitCommand;
+import shermszz.command.ListCommand;
+import shermszz.command.MarkCommand;
+import shermszz.command.ScheduleCommand;
+import shermszz.command.UnmarkCommand;
 import shermszz.exceptions.DeadlineFormatException;
 import shermszz.exceptions.DeleteFormatException;
 import shermszz.exceptions.EventFormatException;
@@ -11,6 +19,9 @@ import shermszz.exceptions.ScheduleFormatException;
 import shermszz.exceptions.ShermszzException;
 import shermszz.exceptions.TodoFormatException;
 import shermszz.exceptions.UnknownCommandException;
+import shermszz.task.Deadline;
+import shermszz.task.Event;
+import shermszz.task.Todo;
 
 /**
  * Parses user input into actionable commands and extracts task details.
@@ -29,14 +40,63 @@ public class Parser {
      * @return The {@code Command} corresponding to the user's input.
      * @throws UnknownCommandException If the command word does not match any known command.
      */
-    public static Command parse(String fullCommand) throws UnknownCommandException {
+    public static Command parseCommand(String fullCommand) throws ShermszzException {
         String[] parts = fullCommand.split(" ", 2);
-        String commandWord = parts[0];
-        try {
-            //Convert input "todo" --> "TODO" and find the enum
-            return Command.valueOf(commandWord.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new UnknownCommandException("Your command \"" + commandWord + "\" is invalid.");
+        String commandWord = parts[0].toLowerCase(); // Normalize to lower case
+        switch (commandWord) {
+        case "bye":
+            return new ExitCommand();
+
+        case "list":
+            return new ListCommand();
+
+        case "todo":
+            // Reusing your existing parseTodo logic
+            String todoDescription = (fullCommand);
+            return new AddCommand(new Todo(todoDescription));
+
+        case "deadline":
+            // Reusing existing parseDeadline
+            String[] dParts = parseDeadline(fullCommand);
+            try {
+                String description = dParts[0];
+                String dueDate = dParts[1];
+                return new AddCommand(new Deadline(description, dueDate));
+            } catch (DateTimeParseException e) {
+                throw new DeadlineFormatException("Invalid Date Format. Please use YYYY-MM-DD (e.g., 2026-05-01).");
+            }
+
+        case "event":
+            // Reusing existing parseEvent
+            String[] eParts = parseEvent(fullCommand);
+            try {
+                String description = eParts[0];
+                String startDate = eParts[1];
+                String endDate = eParts[2];
+                return new AddCommand(new Event(description, startDate, endDate));
+            } catch (DateTimeParseException e) {
+                throw new EventFormatException("Invalid Date Format. Please use YYYY-MM-DD "
+                        + "for both start and end dates");
+            }
+
+        case "delete":
+            int deleteIndex = parseDeletion(fullCommand);
+            return new DeleteCommand(deleteIndex - 1); // Convert to 0-based
+
+        case "mark":
+            int markIndex = parseMarking(fullCommand);
+            return new MarkCommand(markIndex - 1);
+
+        case "unmark":
+            int unmarkIndex = parseUnmarking(fullCommand);
+            return new UnmarkCommand(unmarkIndex - 1);
+
+        case "schedule":
+            LocalDate date = parseSchedule(fullCommand);
+            return new ScheduleCommand(date);
+
+        default:
+            throw new UnknownCommandException("I'm sorry, but your command: " + commandWord + " is invalid.");
         }
     }
 
@@ -102,20 +162,16 @@ public class Parser {
      * Validates that the index is a number and exists within the current task list.
      *
      * @param command The full command string (e.g., "mark 1").
-     * @param size    The current size of the task list (used for validation).
      * @return The 1-based index of the task to be marked.
      * @throws MarkFormatException If the index is missing, not a number, or out of bounds.
      */
-    public static int parseMarking(String command, int size) throws MarkFormatException {
+    public static int parseMarking(String command) throws MarkFormatException {
         String[] parts = command.split(" "); //Should be mark X, where X is a number
         if (parts.length < 2) {
             throw new MarkFormatException("You must specify a task to mark after typing \"mark\"");
         }
         try {
-            int idx = Integer.parseInt(parts[1]); //Could throw NumberFormatExecption if a digit isnt entered
-            if (idx > size || idx < 1) {
-                throw new MarkFormatException("Cannot mark task with ID = " + idx + ". It does not exist.");
-            }
+            int idx = Integer.parseInt(parts[1]); //Could throw NumberFormatException if a digit is not entered
             return idx;
         } catch (NumberFormatException e) {
             throw new MarkFormatException("Please specify a valid task ID number.");
@@ -127,20 +183,16 @@ public class Parser {
      * Validates that the index is a number and exists within the current task list.
      *
      * @param command The full command string (e.g., "unmark 1").
-     * @param size    The current size of the task list (used for validation).
      * @return The 1-based index of the task to be unmarked.
      * @throws MarkFormatException If the index is missing, not a number, or out of bounds.
      */
-    public static int parseUnmarking(String command, int size) throws MarkFormatException {
+    public static int parseUnmarking(String command) throws MarkFormatException {
         String[] parts = command.split(" "); //Should be mark X, where X is a number
         if (parts.length < 2) {
             throw new MarkFormatException("You must specify a task to unmark after typing \"unmark\"");
         }
         try {
             int idx = Integer.parseInt(parts[1]);
-            if (idx > size || idx < 1) {
-                throw new MarkFormatException("Cannot unmark task with ID =  " + idx + ". It does not exist.");
-            }
             return idx;
         } catch (NumberFormatException e) {
             throw new MarkFormatException("Please specify a valid task ID number.");
@@ -152,21 +204,16 @@ public class Parser {
      * Validates that the index is a number and exists within the current task list.
      *
      * @param command The full command string (e.g., "delete 1").
-     * @param size    The current size of the task list (used for validation).
      * @return The 1-based index of the task to be deleted.
      * @throws DeleteFormatException If the index is missing, not a number, or out of bounds.
      */
-    public static int parseDeletion(String command, int size) throws DeleteFormatException {
+    public static int parseDeletion(String command) throws DeleteFormatException {
         String[] parts = command.split(" ");
         if (parts.length < 2) {
             throw new DeleteFormatException("You must specify a task to delete after typing \"delete\"");
         }
         try {
-            int id = Integer.parseInt(parts[1]);
-            if (id > size || id < 1) {
-                throw new DeleteFormatException("Cannot delete task with ID =  " + id + ". It does not exist.");
-            }
-            return id;
+            return Integer.parseInt(parts[1]);
         } catch (NumberFormatException e) {
             throw new DeleteFormatException("Please specify a valid task ID number.");
         }

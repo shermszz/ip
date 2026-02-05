@@ -1,7 +1,6 @@
 package shermszz.ui;
 
 import java.time.LocalDate;
-import java.util.Scanner;
 
 import shermszz.task.Task;
 import shermszz.task.TaskList;
@@ -11,74 +10,45 @@ import shermszz.task.TaskList;
  * Handles all interactions with the user, including reading input and printing messages.
  */
 public class Ui {
-    private Scanner sc;
-
-    /**
-     * Initializes the UI and sets up the scanner for user input.
-     */
-    public Ui() {
-        this.sc = new Scanner(System.in);
-    }
-
-    /**
-     * Reads the next command entered by the user.
-     *
-     * @return The full command string entered by the user.
-     */
-    public String readCommand() {
-        return sc.nextLine();
-    }
-
     /**
      * Displays the welcome message and logo to the user upon startup.
      */
-    public void showWelcome() {
-        showLine();
-        System.out.println("Hello from under the water! I am Spongebob here to record your tasks in my pineapple.");
-        System.out.println("Right now, I can record Todo, Deadline and Event tasks, "
-                + "mark your tasks as complete or unmark them as incomplete, List the tasks you have recorded so far,"
-                + " as well as Delete a task from the record.");
-        System.out.println("What can I do for you?");
-        showLine();
+    public String showWelcome() {
+        return "Hello from under the water! I am Spongebob here to record your tasks in my pineapple.\n"
+                + "Right now, I can record Todo, Deadline and Event tasks, "
+                + "mark your tasks as complete or unmark them as incomplete, "
+                + "List the tasks you have recorded so far,"
+                + " as well as Delete a task from the record.";
     }
 
     /**
-     * Prints a horizontal line separator to the console.
-     * Used to visually separate command outputs for better readability.
+     * Returns the exit message when the application terminates.
      */
-    public void showLine() {
-        System.out.println("--------------------------------------");
+    public String showBye() {
+        return "Bye. Hope to see you again soon!";
     }
 
     /**
-     * Displays the exit message when the application terminates.
-     */
-    public void showBye() {
-        showLine();
-        System.out.println("Bye. Hope to see you again soon!");
-        showLine();
-    }
-
-    /**
-     * Prints an error message to the console.
+     * Returns an error message as a String.
      *
      * @param message The error message to display.
      */
-    public void showError(String message) {
-        System.out.println(message);
-        showLine();
+    public String showError(String message) {
+        return message + "\n";
     }
 
     /**
-     * Prints the list of tasks to the console.
+     * Returns the list of tasks to the console as a String.
      *
      * @param tasks The TaskList containing the tasks to display.
      */
-    public void listTasks(TaskList tasks) {
-        System.out.println("Here are the tasks in your list:");
+    public String listTasks(TaskList tasks) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Here are the tasks in your list:\n");
         for (int i = 0; i < tasks.getSize(); i++) {
-            System.out.println((i + 1) + ". " + tasks.get(i).toString());
+            sb.append((i + 1) + ". " + tasks.get(i).toString() + "\n");
         }
+        return sb.toString();
     }
 
     /**
@@ -87,9 +57,8 @@ public class Ui {
      * @param t       The task to mark.
      * @param message The message to inform the user the task has been marked.
      */
-    public void showMarked(Task t, String message) {
-        System.out.println(message);
-        System.out.println(t.toString());
+    public String showMarked(Task t, String message) {
+        return message + "\n" + t.toString();
     }
 
     /**
@@ -98,32 +67,29 @@ public class Ui {
      * @param t       The task to unmark.
      * @param message The message to inform the user the task has been unmarked.
      */
-    public void showUnmarked(Task t, String message) {
-        System.out.println(message);
-        System.out.println(t.toString());
+    public String showUnmarked(Task t, String message) {
+        return message + "\n" + t.toString();
     }
 
     /**
-     * Displays a message confirming a task has been added.
+     * Returns a String message confirming a task has been added.
      *
      * @param t    The task that was added.
      * @param size The new size of the task list.
      */
-    public void showTaskAdded(Task t, int size) {
-        System.out.println("Got it. I've added this task:\n" + t.toString());
-        System.out.println("Now you have " + size + " tasks in the list");
+    public String showTaskAdded(Task t, int size) {
+        return "Got it. I've added this task:\n" + t.toString() + "\nNow you have " + size + " tasks in the list";
     }
 
     /**
-     * Displays a message confirming a task has been deleted.
+     * Returns a String message confirming a task has been deleted.
      *
      * @param toDelete The task to delete.
      * @param size     The new size of the task list.
      */
-    public void showDeletedTask(Task toDelete, int size) {
-        System.out.println("Noted. I've removed this task:");
-        System.out.println(toDelete.toString());
-        System.out.println("Now you have " + size + " tasks in the list.");
+    public String showDeletedTask(Task toDelete, int size) {
+        return "Noted. I've removed this task:\n" + toDelete.toString()
+                + "\nNow you have " + size + " tasks in the list.";
     }
 
     /**
@@ -131,8 +97,8 @@ public class Ui {
      *
      * @param t The task to be displayed.
      */
-    public void showTask(Task t) {
-        System.out.println(t.toString());
+    public String showTask(Task t) {
+        return t.toString();
     }
 
     /**
@@ -140,8 +106,8 @@ public class Ui {
      *
      * @param date The date checked by the user.
      */
-    public void showNoTaskOnDate(LocalDate date) {
-        System.out.println("[You have no tasks occurring on " + date);
+    public String showNoTaskOnDate(LocalDate date) {
+        return "You have no tasks occurring on " + date;
     }
 
     /**
@@ -149,14 +115,17 @@ public class Ui {
      *
      * @param tasks The TaskList containing the matching tasks.
      */
-    public void showFoundTasks(TaskList tasks) {
+    public String showFoundTasks(TaskList tasks) {
         if (tasks.getSize() == 0) {
-            System.out.println("No matching tasks found.");
+            return "No matching tasks found.";
         } else {
-            System.out.println("Here are the matching tasks in your list: ");
+            StringBuilder sb = new StringBuilder();
+            sb.append("Here are the matching tasks in your list: \n");
             for (int i = 0; i < tasks.getSize(); i++) {
-                System.out.println((i + 1) + ". " + tasks.get(i).toString());
+                sb.append(((i + 1) + ". " + tasks.get(i).toString()) + "\n");
             }
+            return sb.toString();
         }
     }
 }
+
