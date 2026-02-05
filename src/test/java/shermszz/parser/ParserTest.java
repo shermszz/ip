@@ -11,7 +11,6 @@ import shermszz.exceptions.EventFormatException;
 import shermszz.exceptions.MarkFormatException;
 import shermszz.exceptions.ShermszzException;
 import shermszz.exceptions.TodoFormatException;
-import shermszz.exceptions.UnknownCommandException;
 
 public class ParserTest {
     @Test
@@ -55,31 +54,21 @@ public class ParserTest {
 
     @Test
     public void parseMark_validTaskIndex_success() throws MarkFormatException {
-        int mark = Parser.parseMarking("mark 3", 5);
+        int mark = Parser.parseMarking("mark 3");
         assertEquals(3, mark);
 
-        int unmark = Parser.parseUnmarking("unmark 3", 5);
+        int unmark = Parser.parseUnmarking("unmark 3");
         assertEquals(3, unmark);
     }
 
-    @Test
-    public void parseMark_invalidIndex_markFormatExceptionReturned() {
-        try {
-            Parser.parseMarking("mark 10", 5);
-            fail();
-        } catch (MarkFormatException e) {
-            assertEquals("Mark Format Error: Cannot mark task with ID = 10. It does not exist.",
-                    e.getMessage());
-        }
-    }
 
     @Test
     public void parse_invalidCommand_unknownCommandExceptionReturned() {
         try {
-            Parser.parse("Hello there");
+            Parser.parseCommand("Hello there");
             fail(); //Should not reach here
-        } catch (UnknownCommandException e) {
-            assertEquals("Unknown Command Error: Your command \"Hello\" is invalid.", e.getMessage());
+        } catch (ShermszzException e) {
+            assertEquals("Unknown Command Error: I'm sorry, but your command: hello is invalid.", e.getMessage());
         }
     }
 
