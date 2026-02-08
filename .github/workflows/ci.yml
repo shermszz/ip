@@ -26,7 +26,7 @@ jobs:
 
       # Grant execute permission for gradlew
       - name: Grant execute permission for gradlew
-        run: chomd +x gradlew
+        run: chmod +x gradlew
 
       # Run the Gradle build, Compile the code and runs JUnit tests and ensures Checkstyle adhered to
       - name: Build with Gradle
