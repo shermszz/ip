@@ -45,6 +45,7 @@ public class Shermszz {
      * This method is called by the GUI (MainWindow).
      */
     public String getResponse(String input) {
+        assert input != null : "Input passed to Logic should not be null";
         try {
             // 1. Parse the input string into a Command object
             Command c = Parser.parseCommand(input);
