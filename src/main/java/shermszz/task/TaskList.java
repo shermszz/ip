@@ -1,6 +1,7 @@
 package shermszz.task;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  * Represents the list of tasks in the Shermszz application.
@@ -82,5 +83,9 @@ public class TaskList {
             }
         }
         return new TaskList(foundTasks);
+    }
+
+    public void sort(Comparator<Task> comparator) {
+        this.tasks.sort(comparator);
     }
 }

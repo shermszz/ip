@@ -35,4 +35,9 @@ public class Deadline extends Task {
     public boolean isOccurringOn(LocalDate date) {
         return this.dueBy.isAfter(date);
     }
+
+    @Override
+    public LocalDate getDateOrMax() {
+        return this.dueBy;
+    }
 }

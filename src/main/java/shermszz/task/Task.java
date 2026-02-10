@@ -1,6 +1,7 @@
 package shermszz.task;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 
 /**
  * Represents a generic task in the Shermszz application.
@@ -86,5 +87,25 @@ public class Task {
     public String toFileFormat() {
         //1 for done, 0 for not done
         return String.format("%d | %s", this.completed ? 1 : 0, this.description);
+    }
+
+    /**
+     * A comparator that compares tasks based on their chronological order.
+     * Tasks are compared based on their {@code getDateOrMax()} value.
+     * Tasks with earlier dates appear first. Tasks without dates (Todos)
+     * are treated as having the maximum possible date, appearing last.
+     */
+    public static class DateComparator implements Comparator<Task> {
+        @Override
+        public int compare(Task t1, Task t2) {
+            //Helper to extract date from task (returns MAX date if not applicable)
+            LocalDate d1 = t1.getDateOrMax();
+            LocalDate d2 = t2.getDateOrMax();
+            return d1.compareTo(d2);
+        }
+    }
+
+    public LocalDate getDateOrMax() {
+        return LocalDate.MAX; // Default for Todo
     }
 }
