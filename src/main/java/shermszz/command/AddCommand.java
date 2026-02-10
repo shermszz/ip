@@ -24,6 +24,7 @@ public class AddCommand extends Command {
 
     @Override
     public String execute(TaskList tasks, Ui ui, Storage storage) {
+        assert this.taskToAdd != null : "Task to add cannot be null";
         tasks.add(taskToAdd);
         try {
             storage.save(tasks); // Save immediately after adding

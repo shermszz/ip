@@ -72,6 +72,7 @@ public class Storage {
      * @throws FileSaveException If an I/O error occurs during writing.
      */
     public void save(TaskList tasks) throws FileSaveException {
+        assert tasks != null : "Cannot save a null TaskList";
         try {
             File directory = new File("data");
             if (!directory.exists()) {
