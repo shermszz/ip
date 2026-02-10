@@ -19,8 +19,8 @@ import shermszz.task.Todo;
  */
 
 public class Storage {
+    private static final String DELIMITER = " \\| ";
     private String filepath;
-
     /**
      * Creates a new Storage instance.
      *
@@ -49,32 +49,8 @@ public class Storage {
             while (scanner.hasNext()) {
                 String line = scanner.nextLine();
                 try {
-                    String[] parts = line.split(" \\| "); //To split the array up based on " | ".
-                    //E.g. T | 1 | read book --> ["T", "1", "read book"]
-                    String type = parts[0]; //Either a Todo or.Deadline or Event task
-                    boolean isDone = parts[1].equals("1");
-                    String description = parts[2];
-                    Task t = null;
-                    switch (type) {
-                    case "T":
-                        //E.g. T | 0 | test todo
-                        t = new Todo(description);
-                        break;
-                    case "D":
-                        //E.g. D | 0 | test deadline | 2025-01-01
-                        t = new Deadline(description, parts[3]);
-                        break;
-                    case "E":
-                        //E.g. E | 0 | test event | 2025-01-01 | 2026-01-01
-                        t = new Event(description, parts[3], parts[4]);
-                        break;
-                    default:
-                    }
-
+                    Task t = decodeTask(line); //High-Level method
                     if (t != null) {
-                        if (isDone) {
-                            t.markAsDone();
-                        }
                         loadedTasks.add(t);
                     }
                 } catch (Exception e) {
@@ -110,5 +86,37 @@ public class Storage {
         } catch (IOException e) {
             throw new FileSaveException("Error saving tasks: " + e.getMessage());
         }
+    }
+
+    /**
+     * Decodes a single line from the storage file into a Task object.
+     * This isolates the low-level parsing logic.
+     */
+    public Task decodeTask(String line) {
+        String[] parts = line.split(DELIMITER);
+        //E.g. T | 1 | read book --> ["T", "1", "read book"]
+        String type = parts[0]; //Either a Todo or.Deadline or Event task
+        boolean isDone = parts[1].equals("1");
+        String description = parts[2];
+        Task task = null;
+        switch (type) {
+        case "T":
+            //E.g. T | 0 | test todo
+            task = new Todo(description);
+            break;
+        case "D":
+            //E.g. D | 0 | test deadline | 2025-01-01
+            task = new Deadline(description, parts[3]);
+            break;
+        case "E":
+            //E.g. E | 0 | test event | 2025-01-01 | 2026-01-01
+            task = new Event(description, parts[3], parts[4]);
+            break;
+        default:
+        }
+        if (isDone) {
+            task.markAsDone();
+        }
+        return task;
     }
 }

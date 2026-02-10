@@ -31,6 +31,12 @@ import shermszz.task.Todo;
  * of arguments for task creation and modification.
  */
 public class Parser {
+    private static final int TODO_OFFSET = 5; // Length of "todo "
+    private static final int DEADLINE_OFFSET = 9; // Length of "deadline "
+    private static final int EVENT_OFFSET = 6; // Length of "event "
+    private static final int BY_LENGTH = 3; // Length of "/by"
+    private static final int FROM_LENGTH = 5; // Length of "/from"
+    private static final int TO_LENGTH = 3; // Length of "/to"
 
     /**
      * Parses the full command string to identify the specific command type.
@@ -56,28 +62,10 @@ public class Parser {
             return new AddCommand(new Todo(todoDescription));
 
         case "deadline":
-            // Reusing existing parseDeadline
-            String[] dParts = parseDeadline(fullCommand);
-            try {
-                String description = dParts[0];
-                String dueDate = dParts[1];
-                return new AddCommand(new Deadline(description, dueDate));
-            } catch (DateTimeParseException e) {
-                throw new DeadlineFormatException("Invalid Date Format. Please use YYYY-MM-DD (e.g., 2026-05-01).");
-            }
+            return prepareDeadline(fullCommand);
 
         case "event":
-            // Reusing existing parseEvent
-            String[] eParts = parseEvent(fullCommand);
-            try {
-                String description = eParts[0];
-                String startDate = eParts[1];
-                String endDate = eParts[2];
-                return new AddCommand(new Event(description, startDate, endDate));
-            } catch (DateTimeParseException e) {
-                throw new EventFormatException("Invalid Date Format. Please use YYYY-MM-DD "
-                        + "for both start and end dates");
-            }
+            return prepareEvent(fullCommand);
 
         case "delete":
             int deleteIndex = parseDeletion(fullCommand);
@@ -100,6 +88,29 @@ public class Parser {
         }
     }
 
+    private static Command prepareDeadline(String fullCommand) throws ShermszzException {
+        String[] dParts = parseDeadline(fullCommand);
+        try {
+            String description = dParts[0];
+            String dueDate = dParts[1];
+            return new AddCommand(new Deadline(description, dueDate));
+        } catch (DateTimeParseException e) {
+            throw new DeadlineFormatException("Invalid Date Format. Please use YYYY-MM-DD (e.g., 2026-05-01).");
+        }
+    }
+
+    private static Command prepareEvent(String fullCommand) throws ShermszzException {
+        String[] eParts = parseEvent(fullCommand);
+        try {
+            String description = eParts[0];
+            String startDate = eParts[1];
+            String endDate = eParts[2];
+            return new AddCommand(new Event(description, startDate, endDate));
+        } catch (DateTimeParseException e) {
+            throw new EventFormatException("Invalid Date Format. Please use YYYY-MM-DD "
+                    + "for both start and end dates");
+        }
+    }
     /**
      * Parses the arguments for a Todo command.
      * Extracts the description part of the command string.
@@ -109,10 +120,10 @@ public class Parser {
      * @throws TodoFormatException If the description is empty or the format is invalid.
      */
     public static String parseTodo(String command) throws TodoFormatException {
-        if (command.length() < 5) {
+        if (command.length() < TODO_OFFSET) {
             throw new TodoFormatException("Please enter a valid todo format as follows: todo <description>");
         } else {
-            return command.substring(5).trim();
+            return command.substring(TODO_OFFSET).trim();
         }
     }
 
@@ -129,8 +140,8 @@ public class Parser {
         if (byIndex == -1) {
             throw new DeadlineFormatException("Invalid format. Use deadline <description> /by YYYY-MM-DD");
         } else {
-            String description = command.substring(9, byIndex).trim();
-            String dueBy = command.substring(byIndex + 3).trim(); // Start index is right after /by
+            String description = command.substring(DEADLINE_OFFSET, byIndex).trim();
+            String dueBy = command.substring(byIndex + BY_LENGTH).trim(); // Start index is right after /by
             return new String[]{description, dueBy};
         }
     }
@@ -150,9 +161,9 @@ public class Parser {
             throw new EventFormatException("Please enter a valid event format as follows: "
                     + "event <description> /from <start date> /to <due date>");
         } else {
-            String description = command.substring(6, fromIndex).trim();
-            String start = command.substring(fromIndex + 5, toIndex).trim();
-            String end = command.substring(toIndex + 3).trim();
+            String description = command.substring(EVENT_OFFSET, fromIndex).trim();
+            String start = command.substring(fromIndex + FROM_LENGTH, toIndex).trim();
+            String end = command.substring(toIndex + TO_LENGTH).trim();
             return new String[]{description, start, end};
         }
     }
