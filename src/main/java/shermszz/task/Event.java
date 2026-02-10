@@ -39,4 +39,9 @@ public class Event extends Task {
     public boolean isOccurringOn(LocalDate date) {
         return this.start.isBefore(date) && this.end.isAfter(date);
     }
+
+    @Override
+    public LocalDate getDateOrMax() {
+        return this.start;
+    }
 }

@@ -10,6 +10,7 @@ import shermszz.command.ExitCommand;
 import shermszz.command.ListCommand;
 import shermszz.command.MarkCommand;
 import shermszz.command.ScheduleCommand;
+import shermszz.command.SortCommand;
 import shermszz.command.UnmarkCommand;
 import shermszz.exceptions.DeadlineFormatException;
 import shermszz.exceptions.DeleteFormatException;
@@ -82,6 +83,9 @@ public class Parser {
         case "schedule":
             LocalDate date = parseSchedule(fullCommand);
             return new ScheduleCommand(date);
+
+        case "sort":
+            return new SortCommand();
 
         default:
             throw new UnknownCommandException("I'm sorry, but your command: " + commandWord + " is invalid.");
