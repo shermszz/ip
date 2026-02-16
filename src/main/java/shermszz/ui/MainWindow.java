@@ -59,7 +59,7 @@ public class MainWindow extends AnchorPane {
         );
         userInput.clear();
 
-        if (input.equalsIgnoreCase("bye".trim())) {
+        if (input.trim().equalsIgnoreCase("bye")) {
             // Create a pause so the user can read the goodbye message before closing
             javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(
                     javafx.util.Duration.seconds(1));

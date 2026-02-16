@@ -1,0 +1,15 @@
+.root {
+    /* Define a global font size and family */
+    -fx-font-family: "Roboto", "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+
+    /* Keep your existing color definitions */
+    main-color: rgb(237, 255, 242);
+    -fx-background-color: main-color;
+}
+.button {
+    -fx-background-color: mediumspringgreen;
+    /* You can override specific fonts here if needed */
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-font-weight: bold;
+}

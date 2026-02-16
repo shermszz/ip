@@ -10,15 +10,15 @@ import shermszz.ui.Ui;
 /**
  * Finds and lists all tasks occurring on a specific date.
  */
-public class ScheduleCommand extends Command {
+public class ViewScheduleCommand extends Command {
     private final LocalDate targetDate;
 
     /**
-     * Creates a ScheduleCommand for the specified date.
+     * Creates a ViewScheduleCommand for the specified date.
      *
      * @param targetDate The date to filter tasks by.
      */
-    public ScheduleCommand(LocalDate targetDate) {
+    public ViewScheduleCommand(LocalDate targetDate) {
         this.targetDate = targetDate;
     }
 
@@ -29,7 +29,7 @@ public class ScheduleCommand extends Command {
 
         for (int i = 0; i < tasks.getSize(); i++) {
             Task t = tasks.get(i);
-            if (t.isOccurringOn(targetDate)) {
+            if (t.isOccurringOnOrAfter(targetDate)) {
                 result.append(t.toString()).append("\n");
                 count++;
             }

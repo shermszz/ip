@@ -10,7 +10,7 @@ import java.util.Comparator;
  * It encapsulates the common behaviors such as description storage and completion status management.
  */
 public class Task {
-    private boolean completed;
+    private boolean isComplete;
     private String description;
 
     /**
@@ -21,12 +21,12 @@ public class Task {
      */
     public Task(String description) {
         this.description = description;
-        this.completed = false;
+        this.isComplete = false;
     }
 
     @Override
     public String toString() {
-        if (this.completed) {
+        if (this.isComplete) {
             return "[X] " + this.description;
         }
         return "[] " + this.description;
@@ -38,7 +38,7 @@ public class Task {
      * @return "X" if the task is done, " " otherwise.
      */
     public String getStatusIcon() {
-        return completed ? "X" : " ";
+        return isComplete ? "X" : " ";
     }
 
     /**
@@ -47,7 +47,7 @@ public class Task {
      * @return true if the task is marked as done, false otherwise.
      */
     public boolean isDone() {
-        return this.completed;
+        return this.isComplete;
     }
 
     /**
@@ -55,7 +55,7 @@ public class Task {
      * Updates the internal status to true.
      */
     public void markAsDone() {
-        this.completed = true;
+        this.isComplete = true;
     }
 
     /**
@@ -63,7 +63,7 @@ public class Task {
      * Updates the internal status to false.
      */
     public void markAsIncomplete() {
-        this.completed = false;
+        this.isComplete = false;
     }
 
     /**
@@ -75,7 +75,7 @@ public class Task {
      * @param date The date to check against.
      * @return true if the task occurs on the given date, false otherwise.
      */
-    public boolean isOccurringOn(LocalDate date) {
+    public boolean isOccurringOnOrAfter(LocalDate date) {
         return false;
     }
 
@@ -86,7 +86,7 @@ public class Task {
      */
     public String toFileFormat() {
         //1 for done, 0 for not done
-        return String.format("%d | %s", this.completed ? 1 : 0, this.description);
+        return String.format("%d | %s", this.isComplete ? 1 : 0, this.description);
     }
 
     /**

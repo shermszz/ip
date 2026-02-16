@@ -32,7 +32,7 @@ public class Deadline extends Task {
     }
 
     @Override
-    public boolean isOccurringOn(LocalDate date) {
+    public boolean isOccurringOnOrAfter(LocalDate date) {
         return this.dueBy.isAfter(date);
     }
 

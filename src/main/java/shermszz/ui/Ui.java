@@ -15,17 +15,21 @@ public class Ui {
      */
     public String showWelcome() {
         return "Hello from under the water! I am Spongebob here to record your tasks in my pineapple.\n"
-                + "Right now, I can record Todo, Deadline and Event tasks, "
-                + "mark your tasks as complete or unmark them as incomplete, "
-                + "List the tasks you have recorded so far,"
-                + " as well as Delete a task from the record.";
+                + "Right now, I can record Todo, Deadline and Event tasks,\n "
+                + "Mark your tasks as complete or Unmark them as incomplete,\n "
+                + "List the tasks you have recorded so far,\n "
+                + "Delete a task from the record,\n "
+                + "List the tasks due by a certain schedule, and also\n "
+                + "Sort your tasks based on the next earliest due date.\n"
+                + "If you are not sure about anything, type 'help' and I will open my pineapple for you "
+                + "to clarify your questions";
     }
 
     /**
      * Returns the exit message when the application terminates.
      */
     public String showBye() {
-        return "Bye. Hope to see you again soon!";
+        return "See you next time buddy";
     }
 
     /**
@@ -93,15 +97,6 @@ public class Ui {
     }
 
     /**
-     * Prints the details of a specific task to the console.
-     *
-     * @param t The task to be displayed.
-     */
-    public String showTask(Task t) {
-        return t.toString();
-    }
-
-    /**
      * Displays a message indicating that no tasks occur on the specified date.
      *
      * @param date The date checked by the user.
@@ -111,21 +106,22 @@ public class Ui {
     }
 
     /**
-     * Prints the list of matching tasks to the console.
+     * Returns a list of supported commands.
      *
-     * @param tasks The TaskList containing the matching tasks.
+     * @return The formatted help string
      */
-    public String showFoundTasks(TaskList tasks) {
-        if (tasks.getSize() == 0) {
-            return "No matching tasks found.";
-        } else {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Here are the matching tasks in your list: \n");
-            for (int i = 0; i < tasks.getSize(); i++) {
-                sb.append(((i + 1) + ". " + tasks.get(i).toString()) + "\n");
-            }
-            return sb.toString();
-        }
+    public String showHelp() {
+        return "Here are the commands I know:\n"
+                + "1. todo <description> --> Add a todo task\n"
+                + "2. deadline <description> /by <date> --> Add a task with a deadline\n"
+                + "3. event <description> /from <date> /to <date> --> Add an event task with a start and end date\n"
+                + "4. list --> Lists all tasks in my record\n"
+                + "5. mark <1-based index> --> Mark specified task at the listed index as complete\n"
+                + "6. unmark <1-based index> --> Unmark specified task at the listed index as incomplete\n"
+                + "7. delete <1-based index> --> Deletes the specified task at the listed index\n"
+                + "8. view <date> --> Finds tasks that are going to occur by the specified date \n"
+                + "9. sort --> Displays all tasks again, but in non-descending order of due dates\n"
+                + "10. bye --> To exit my pineapple";
     }
 }
 
