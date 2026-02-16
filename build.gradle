@@ -48,11 +48,11 @@ test {
 }
 
 application {
-    mainClass.set("shermszz.Launcher")
+    mainClass.set("spongebob.Launcher")
 }
 
 shadowJar {
-    archiveBaseName = "shermszz"
+    archiveBaseName = "spongebob"
     archiveClassifier = null
 }
 

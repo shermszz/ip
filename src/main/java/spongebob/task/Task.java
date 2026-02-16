@@ -1,0 +1,111 @@
+package spongebob.task;
+
+import java.time.LocalDate;
+import java.util.Comparator;
+
+/**
+ * Represents a generic task in the Spongebob application.
+ * <p>
+ * This abstract class serves as the parent for specific task types (Todo, Deadline, Event).
+ * It encapsulates the common behaviors such as description storage and completion status management.
+ */
+public class Task {
+    private boolean isComplete;
+    private String description;
+
+    /**
+     * Constructs a new Task with the specified description.
+     * Initializes the completion status to false (incomplete).
+     *
+     * @param description The description of the task.
+     */
+    public Task(String description) {
+        this.description = description;
+        this.isComplete = false;
+    }
+
+    @Override
+    public String toString() {
+        if (this.isComplete) {
+            return "[X] " + this.description;
+        }
+        return "[] " + this.description;
+    }
+
+    /**
+     * Returns the status icon of the task.
+     *
+     * @return "X" if the task is done, " " otherwise.
+     */
+    public String getStatusIcon() {
+        return isComplete ? "X" : " ";
+    }
+
+    /**
+     * Returns the completion status of the task.
+     *
+     * @return true if the task is marked as done, false otherwise.
+     */
+    public boolean isDone() {
+        return this.isComplete;
+    }
+
+    /**
+     * Marks the task as completed.
+     * Updates the internal status to true.
+     */
+    public void markAsDone() {
+        this.isComplete = true;
+    }
+
+    /**
+     * Marks the task as incomplete.
+     * Updates the internal status to false.
+     */
+    public void markAsIncomplete() {
+        this.isComplete = false;
+    }
+
+    /**
+     * Checks if the task is scheduled to occur on the specified date.
+     * <p>
+     * Default implementation returns false; subclasses should override this
+     * if they are associated with specific dates.
+     *
+     * @param date The date to check against.
+     * @return true if the task occurs on the given date, false otherwise.
+     */
+    public boolean isOccurringOnOrAfter(LocalDate date) {
+        return false;
+    }
+
+    /**
+     * Formats the task data for storage in the hard disk.
+     *
+     * @return A string formatted for file storage (e.g., "T | 1 | description").
+     */
+    public String toFileFormat() {
+        //1 for done, 0 for not done
+        return String.format("%d | %s", this.isComplete ? 1 : 0, this.description);
+    }
+
+    /**
+     * A comparator that compares tasks based on their chronological order.
+     * Tasks are compared based on their {@code getDateOrMax()} value.
+     * Tasks with earlier dates appear first. Tasks without dates (Todos)
+     * are treated as having the maximum possible date, appearing last.
+     */
+    public static class DateComparator implements Comparator<Task> {
+        @Override
+        public int compare(Task t1, Task t2) {
+            //Helper to extract date from task (returns MAX date if not applicable)
+            LocalDate d1 = t1.getDateOrMax();
+            LocalDate d2 = t2.getDateOrMax();
+            return d1.compareTo(d2);
+        }
+    }
+
+    public LocalDate getDateOrMax() {
+        return LocalDate.MAX; // Default for Todo
+    }
+}

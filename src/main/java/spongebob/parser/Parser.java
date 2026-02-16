@@ -1,0 +1,278 @@
+package spongebob.parser;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
+import spongebob.command.AddCommand;
+import spongebob.command.Command;
+import spongebob.command.DeleteCommand;
+import spongebob.command.ExitCommand;
+import spongebob.command.HelpCommand;
+import spongebob.command.ListCommand;
+import spongebob.command.MarkCommand;
+import spongebob.command.SortCommand;
+import spongebob.command.UnmarkCommand;
+import spongebob.command.ViewScheduleCommand;
+import spongebob.exceptions.DeadlineFormatException;
+import spongebob.exceptions.DeleteFormatException;
+import spongebob.exceptions.EventFormatException;
+import spongebob.exceptions.MarkFormatException;
+import spongebob.exceptions.ScheduleFormatException;
+import spongebob.exceptions.SpongebobException;
+import spongebob.exceptions.TodoFormatException;
+import spongebob.exceptions.UnknownCommandException;
+import spongebob.task.Deadline;
+import spongebob.task.Event;
+import spongebob.task.Todo;
+
+/**
+ * Parses user input into actionable commands and extracts task details.
+ * <p>
+ * This class serves as the interface between raw user input and the application's logic.
+ * It handles the breakdown of command strings, validation of formats, and extraction
+ * of arguments for task creation and modification.
+ */
+public class Parser {
+    private static final int TODO_OFFSET = 5; // Length of "todo "
+    private static final int DEADLINE_OFFSET = 9; // Length of "deadline "
+    private static final int EVENT_OFFSET = 6; // Length of "event "
+    private static final int BY_LENGTH = 3; // Length of "/by"
+    private static final int FROM_LENGTH = 5; // Length of "/from"
+    private static final int TO_LENGTH = 3; // Length of "/to"
+
+    /**
+     * Parses the full command string to identify the specific command type.
+     * Converts the first word of the input into a standard {@code Command} enum.
+     *
+     * @param fullCommand The full input string entered by the user.
+     * @return The {@code Command} corresponding to the user's input.
+     * @throws UnknownCommandException If the command word does not match any known command.
+     */
+    public static Command parseCommand(String fullCommand) throws SpongebobException {
+        String[] parts = fullCommand.split(" ", 2);
+        String commandWord = parts[0].toLowerCase(); // Normalize to lower case
+        switch (commandWord) {
+        case "bye":
+            return new ExitCommand();
+
+        case "list":
+            return new ListCommand();
+
+        case "todo":
+            // Reusing your existing parseTodo logic
+            String todoDescription = (fullCommand);
+            return new AddCommand(new Todo(todoDescription));
+
+        case "deadline":
+            return prepareDeadline(fullCommand);
+
+        case "event":
+            return prepareEvent(fullCommand);
+
+        case "delete":
+            int deleteIndex = parseDeletion(fullCommand);
+            return new DeleteCommand(deleteIndex - 1); // Convert to 0-based
+
+        case "mark":
+            int markIndex = parseMarking(fullCommand);
+            return new MarkCommand(markIndex - 1);
+
+        case "unmark":
+            int unmarkIndex = parseUnmarking(fullCommand);
+            return new UnmarkCommand(unmarkIndex - 1);
+
+        case "view":
+            LocalDate date = parseSchedule(fullCommand);
+            return new ViewScheduleCommand(date);
+
+        case "sort":
+            return new SortCommand();
+
+        case "help":
+            return new HelpCommand();
+
+        default:
+            throw new UnknownCommandException("I'm sorry, but your command: " + commandWord + " is invalid.");
+        }
+    }
+
+    private static Command prepareDeadline(String fullCommand) throws SpongebobException {
+        String[] dParts = parseDeadline(fullCommand);
+        try {
+            String description = dParts[0];
+            String dueDate = dParts[1];
+            return new AddCommand(new Deadline(description, dueDate));
+        } catch (DateTimeParseException e) {
+            throw new DeadlineFormatException("Invalid Date Format. Please use YYYY-MM-DD (e.g., 2026-05-01).");
+        }
+    }
+
+    private static Command prepareEvent(String fullCommand) throws SpongebobException {
+        String[] eParts = parseEvent(fullCommand);
+        try {
+            String description = eParts[0];
+            String startDate = eParts[1];
+            String endDate = eParts[2];
+            return new AddCommand(new Event(description, startDate, endDate));
+        } catch (DateTimeParseException e) {
+            throw new EventFormatException("Invalid Date Format. Please use YYYY-MM-DD "
+                    + "for both start and end dates");
+        }
+    }
+    /**
+     * Parses the arguments for a Todo command.
+     * Extracts the description part of the command string.
+     *
+     * @param command The full command string (e.g., "todo read book").
+     * @return The description of the todo task.
+     * @throws TodoFormatException If the description is empty or the format is invalid.
+     */
+    public static String parseTodo(String command) throws TodoFormatException {
+        if (command.length() < TODO_OFFSET) {
+            throw new TodoFormatException("Please enter a valid todo format as follows: todo <description>");
+        } else {
+            return command.substring(TODO_OFFSET).trim();
+        }
+    }
+
+    /**
+     * Extracts the description and deadline date from a Deadline command.
+     * Expects the format: "deadline [description] /by [date]".
+     *
+     * @param command The full command string.
+     * @return A String array where index 0 is the description and index 1 is the due date.
+     * @throws DeadlineFormatException If the "/by" delimiter is missing.
+     */
+    public static String[] parseDeadline(String command) throws DeadlineFormatException {
+        int byIndex = command.indexOf("/by");
+        if (byIndex == -1) {
+            throw new DeadlineFormatException("Invalid format. Use deadline <description> /by YYYY-MM-DD");
+        } else {
+            String description = command.substring(DEADLINE_OFFSET, byIndex).trim();
+            String dueBy = command.substring(byIndex + BY_LENGTH).trim(); // Start index is right after /by
+            return new String[]{description, dueBy};
+        }
+    }
+
+    /**
+     * Extracts the description, start time, and end time from an Event command.
+     * Expects the format: "event [description] /from [start] /to [end]".
+     *
+     * @param command The full command string.
+     * @return A String array where index 0 is description, 1 is start time, and 2 is end time.
+     * @throws EventFormatException If "/from" or "/to" delimiters are missing or unordered.
+     */
+    public static String[] parseEvent(String command) throws EventFormatException {
+        int fromIndex = command.indexOf("/from");
+        int toIndex = command.indexOf("/to");
+        if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
+            throw new EventFormatException("Please enter a valid event format as follows: "
+                    + "event <description> /from <start date> /to <due date>");
+        } else {
+            String description = command.substring(EVENT_OFFSET, fromIndex).trim();
+            String start = command.substring(fromIndex + FROM_LENGTH, toIndex).trim();
+            String end = command.substring(toIndex + TO_LENGTH).trim();
+            return new String[]{description, start, end};
+        }
+    }
+
+    /**
+     * Parses the task index from a mark command.
+     * Validates that the index is a number and exists within the current task list.
+     *
+     * @param command The full command string (e.g., "mark 1").
+     * @return The 1-based index of the task to be marked.
+     * @throws MarkFormatException If the index is missing, not a number, or out of bounds.
+     */
+    public static int parseMarking(String command) throws MarkFormatException {
+        String[] parts = command.split(" "); //Should be mark X, where X is a number
+        if (parts.length < 2) {
+            throw new MarkFormatException("You must specify a task to mark after typing \"mark\"");
+        }
+        try {
+            int idx = Integer.parseInt(parts[1]); //Could throw NumberFormatException if a digit is not entered
+            return idx;
+        } catch (NumberFormatException e) {
+            throw new MarkFormatException("Please specify a valid task ID number.");
+        }
+    }
+
+    /**
+     * Parses the task index from an unmark command.
+     * Validates that the index is a number and exists within the current task list.
+     *
+     * @param command The full command string (e.g., "unmark 1").
+     * @return The 1-based index of the task to be unmarked.
+     * @throws MarkFormatException If the index is missing, not a number, or out of bounds.
+     */
+    public static int parseUnmarking(String command) throws MarkFormatException {
+        String[] parts = command.split(" "); //Should be mark X, where X is a number
+        if (parts.length < 2) {
+            throw new MarkFormatException("You must specify a task to unmark after typing \"unmark\"");
+        }
+        try {
+            int idx = Integer.parseInt(parts[1]);
+            return idx;
+        } catch (NumberFormatException e) {
+            throw new MarkFormatException("Please specify a valid task ID number.");
+        }
+    }
+
+    /**
+     * Parses the task index from a delete command.
+     * Validates that the index is a number and exists within the current task list.
+     *
+     * @param command The full command string (e.g., "delete 1").
+     * @return The 1-based index of the task to be deleted.
+     * @throws DeleteFormatException If the index is missing, not a number, or out of bounds.
+     */
+    public static int parseDeletion(String command) throws DeleteFormatException {
+        String[] parts = command.split(" ");
+        if (parts.length < 2) {
+            throw new DeleteFormatException("You must specify a task to delete after typing \"delete\"");
+        }
+        try {
+            return Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            throw new DeleteFormatException("Please specify a valid task ID number.");
+        }
+    }
+
+    /**
+     * Parses the schedule command to extract the target date.
+     * Expects input in the format "schedule YYYY-MM-DD".
+     *
+     * @param command The full command string.
+     * @return The parsed {@code LocalDate} object.
+     * @throws ScheduleFormatException If the date argument is missing or in an invalid format.
+     */
+    public static LocalDate parseSchedule(String command) throws ScheduleFormatException {
+        //Command format: "schedule 2025-01-01" --> Will list all deadline/event tasks that are due by 2025-01-01
+        String[] parts = command.split(" ");
+        if (parts.length < 2) {
+            throw new ScheduleFormatException("Please specify a date: schedule YYYY-MM-DD");
+        }
+        String dateAsString = parts[1].trim();
+        try {
+            LocalDate date = LocalDate.parse(dateAsString);
+            return date;
+        } catch (DateTimeParseException e) {
+            throw new ScheduleFormatException("Invalid Date Format. Please use YYYY-MM-DD.");
+        }
+    }
+
+    /**
+     * Parses the keyword from a find command.
+     *
+     * @param command The full command string (e.g., "find book").
+     * @return The keyword to search for.
+     * @throws SpongebobException If the keyword is missing.
+     */
+    public static String parseFind(String command) throws SpongebobException {
+        String[] parts = command.split(" ", 2);
+        if (parts.length < 2 || parts[1].trim().isEmpty()) {
+            throw new SpongebobException("Please specify a keyword to search for. (E.g. find book)");
+        }
+        return parts[1].trim();
+    }
+}
