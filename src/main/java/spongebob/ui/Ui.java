@@ -119,9 +119,10 @@ public class Ui {
                 + "5. mark <1-based index> --> Mark specified task at the listed index as complete\n"
                 + "6. unmark <1-based index> --> Unmark specified task at the listed index as incomplete\n"
                 + "7. delete <1-based index> --> Deletes the specified task at the listed index\n"
-                + "8. view <date> --> Finds tasks that are going to occur by the specified date \n"
-                + "9. sort --> Displays all tasks again, but in non-descending order of due dates\n"
-                + "10. bye --> To exit my pineapple";
+                + "8. find <description> --> Finds all matching tasks that contain the specified description\n"
+                + "9. view <date> --> Finds tasks that are going to occur by the specified date \n"
+                + "10. sort --> Displays all tasks again, but in non-descending order of due dates\n"
+                + "11. bye --> To exit my pineapple";
     }
     /**
      * Displays the list of tasks found matching the search keyword.
