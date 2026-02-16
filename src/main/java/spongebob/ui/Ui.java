@@ -123,5 +123,22 @@ public class Ui {
                 + "9. sort --> Displays all tasks again, but in non-descending order of due dates\n"
                 + "10. bye --> To exit my pineapple";
     }
+    /**
+     * Displays the list of tasks found matching the search keyword.
+     *
+     * @param tasks The filtered TaskList containing matching tasks.
+     * @return A formatted string of matching tasks.
+     */
+    public String showFoundTasks(TaskList tasks) {
+        if (tasks.getSize() == 0) {
+            return "I could not find any matching tasks in my pineapple :(";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Here are the matching tasks I have found in my pineapple: \n");
+        for (int i = 0; i < tasks.getSize(); i++) {
+            sb.append((i + 1) + ". " + tasks.get(i).toString() + "\n");
+        }
+        return sb.toString();
+    }
 }
 

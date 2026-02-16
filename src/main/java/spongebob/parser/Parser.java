@@ -7,6 +7,7 @@ import spongebob.command.AddCommand;
 import spongebob.command.Command;
 import spongebob.command.DeleteCommand;
 import spongebob.command.ExitCommand;
+import spongebob.command.FindCommand;
 import spongebob.command.HelpCommand;
 import spongebob.command.ListCommand;
 import spongebob.command.MarkCommand;
@@ -84,6 +85,10 @@ public class Parser {
         case "view":
             LocalDate date = parseSchedule(fullCommand);
             return new ViewScheduleCommand(date);
+
+        case "find":
+            String keyword = parseFind(fullCommand);
+            return new FindCommand(keyword);
 
         case "sort":
             return new SortCommand();
@@ -273,6 +278,6 @@ public class Parser {
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
             throw new SpongebobException("Please specify a keyword to search for. (E.g. find book)");
         }
-        return parts[1].trim();
+        return parts[1].toLowerCase().trim();
     }
 }

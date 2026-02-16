@@ -104,6 +104,19 @@ Removes the specified task from the list.
 [E][ ] Boating School (from: Jan 2 2026 to: Jan 2 2026) 
 Now you have 2 tasks in the list.`
 
+### Finding tasks: `find`
+Finds all tasks in the current list that match the specified description
+
+**Format:** `find <description>`
+*   The description is used to filter out all tasks with that matching description
+*   **Example:** `find pineapple`
+
+**Expected output:**
+```declarative
+Here are the matching tasks I have found in my pineapple:
+1. [T][] eat pineapple 
+```
+
 ### Viewing schedule: `view`
 
 Finds and lists all tasks occurring on or after a specific date.
@@ -149,8 +162,9 @@ Here are the commands I know:
 6. unmark <1-based index> --> Unmark specified task at the listed index as incomplete
 7. delete <1-based index> --> Deletes the specified task at the listed index
 8. view <date> --> Finds tasks that are going to occur by the specified date
-9. sort --> Displays all tasks again, but in non-descending order of due dates
-10. bye --> To exit my pineapple
+9. find <description> --> Finds all matching tasks that contain the specified description
+10. sort --> Displays all tasks again, but in non-descending order of due dates
+11. bye --> To exit my pineapple
 ```
 
 ### Exiting the program: `bye`
